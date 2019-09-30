@@ -41,14 +41,14 @@ class FlowersDataset(Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        cls_id = self.df.iloc[idx]['cls_id']
+        cls_id = self.df.iloc[idx]['class_id']
         cls_id = torch.tensor(cls_id).long()
 
         label = self.df.iloc[idx]['label']
 
         sample = {
             'img': img,
-            'cls_id': cls_id,
+            'class_id': cls_id,
             'label': label,
             'img_path': img_path
         }

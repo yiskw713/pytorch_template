@@ -73,7 +73,7 @@ def train(train_loader, model, criterion, optimizer, epoch, device):
         data_time.update(time.time() - end)
 
         x = sample['img']
-        t = sample['cls_id']
+        t = sample['class_id']
 
         x = x.to(device)
         t = t.to(device)
@@ -125,10 +125,9 @@ def validate(val_loader, model, criterion, device):
     model.eval()
 
     with torch.no_grad():
-        end = time.time()
         for i, sample in enumerate(val_loader):
             x = sample['img']
-            t = sample['cls_id']
+            t = sample['class_id']
             x = x.to(device)
             t = t.to(device)
 

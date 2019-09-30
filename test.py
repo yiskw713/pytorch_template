@@ -61,7 +61,7 @@ def test(loader, model, n_classes, device):
     with torch.no_grad():
         for i, sample in enumerate(loader):
             x = sample['img']
-            t = sample['cls_id']
+            t = sample['class_id']
             x = x.to(device)
             t = t.to(device)
 
