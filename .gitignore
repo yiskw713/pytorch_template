@@ -1,0 +1,10 @@
+.ipynb_checkpoints
+.vscode
+dataset/flowers
+*.png
+*.jpg
+__pycache__
+.DS_Store
+*.prm
+*.pth
+events.out.tfevents.*
