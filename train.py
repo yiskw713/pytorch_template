@@ -13,7 +13,7 @@ from addict import Dict
 from sklearn.metrics import f1_score
 from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
-from torchvision.transforms import Compose, ToTensor, RandomCrop, CenterCrop
+from torchvision.transforms import Compose, ToTensor, RandomResizedCrop
 from torchvision.transforms import ColorJitter, RandomHorizontalFlip, Normalize
 
 # from libs.loss_fn.myloss import MyLoss
@@ -176,7 +176,7 @@ def main():
     train_data = FlowersDataset(
         CONFIG,
         transform=Compose([
-            RandomCrop((CONFIG.height, CONFIG.width)),
+            RandomResizedCrop(size=(CONFIG.height, CONFIG.width)),
             RandomHorizontalFlip(),
             ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
             ToTensor(),
@@ -188,7 +188,6 @@ def main():
     val_data = FlowersDataset(
         CONFIG,
         transform=Compose([
-            CenterCrop((CONFIG.height, CONFIG.width)),
             ToTensor(),
             Normalize(mean=get_mean(), std=get_std())
         ]),
@@ -206,7 +205,7 @@ def main():
 
     val_loader = DataLoader(
         val_data,
-        batch_size=CONFIG.batch_size,
+        batch_size=1,
         shuffle=False,
         num_workers=CONFIG.num_workers,
         pin_memory=True
