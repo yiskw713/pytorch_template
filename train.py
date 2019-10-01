@@ -11,7 +11,6 @@ import yaml
 
 from addict import Dict
 from sklearn.metrics import f1_score
-from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, ToTensor, RandomResizedCrop
 from torchvision.transforms import ColorJitter, RandomHorizontalFlip, Normalize
@@ -166,12 +165,6 @@ def main():
         print('You have to use GPUs because training CNN is computationally expensive.')
         sys.exit(1)
 
-    # writer
-    if CONFIG.writer_flag:
-        writer = SummaryWriter(CONFIG.result_path)
-    else:
-        writer = None
-
     # Dataloader
     train_data = FlowersDataset(
         CONFIG,
@@ -305,12 +298,6 @@ def main():
 
     # train and validate model
     print('\n------------------------Start training------------------------\n')
-    train_losses = []
-    val_losses = []
-    train_top1_accuracy = []
-    val_top1_accuracy = []
-    train_f1_score = []
-    val_f1_score = []
 
     for epoch in range(begin_epoch, CONFIG.max_epoch):
 
@@ -318,25 +305,17 @@ def main():
         train_loss, train_acc1, train_f1s = train(
             train_loader, model, criterion, optimizer, epoch, device)
 
-        train_losses.append(train_loss)
-        train_top1_accuracy.append(train_acc1)
-        train_f1_score.append(train_f1s)
-
         # validation
         val_loss, val_acc1, val_f1s = validate(
             val_loader, model, criterion, device)
-
-        val_losses.append(val_loss)
-        val_top1_accuracy.append(val_acc1)
-        val_f1_score.append(val_f1s)
 
         # scheduler
         if scheduler is not None:
             scheduler.step(val_loss)
 
         # save a model if top1 acc is higher than ever
-        if best_acc1 < val_top1_accuracy[-1]:
-            best_acc1 = val_top1_accuracy[-1]
+        if best_acc1 < val_acc1:
+            best_acc1 = val_acc1
             torch.save(
                 model.state_dict(),
                 os.path.join(CONFIG.result_path, 'best_acc1_model.prm')
@@ -353,31 +332,16 @@ def main():
                 best_acc1, scheduler, add_epoch2name=True
             )
 
-        # tensorboardx
-        if writer is not None:
-            writer.add_scalars("loss", {
-                'train': train_losses[-1],
-                'val': val_losses[-1]
-            }, epoch)
-            writer.add_scalars("acc", {
-                'train': train_top1_accuracy[-1],
-                'val': val_top1_accuracy[-1]
-            }, epoch)
-            writer.add_scalars("f1s", {
-                'train': train_f1_score[-1],
-                'val': val_f1_score[-1]
-            }, epoch)
-
         # write logs to dataframe and csv file
         tmp = pd.Series([
             epoch,
             optimizer.param_groups[0]['lr'],
-            train_losses[-1],
-            val_losses[-1],
-            train_top1_accuracy[-1],
-            val_top1_accuracy[-1],
-            train_f1_score[-1],
-            val_f1_score[-1]
+            train_loss,
+            val_loss,
+            train_acc1,
+            val_acc1,
+            train_f1s,
+            val_f1s
         ], index=log.columns
         )
 
@@ -386,8 +350,8 @@ def main():
 
         print(
             'epoch: {}\tlr: {}\ttrain loss: {:.4f}\tval loss: {:.4f}\tval_acc1: {:.5f}\tval_f1s: {:.5f}'
-            .format(epoch, optimizer.param_groups[0]['lr'], train_losses[-1],
-                    val_losses[-1], val_top1_accuracy[-1], val_f1_score[-1])
+            .format(epoch, optimizer.param_groups[0]['lr'], train_loss,
+                    val_loss, val_acc1, val_f1s)
         )
 
     # save models

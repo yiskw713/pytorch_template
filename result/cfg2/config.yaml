@@ -3,7 +3,6 @@ model: resnet34
 # criterion: crossentropy
 
 class_weight: True    # if you use class weight to calculate cross entropy or not
-writer_flag: True      # if you use tensorboardx or not
 
 batch_size: 16
 
