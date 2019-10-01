@@ -29,7 +29,7 @@ root/ ──── csv/
         └ train.py
 ```
 
-## コードを各手順
+## コードを書く手順
 以下の順でコードを書いていきます．
 
 1. データセットクラスのための csv file の作成 (`utils/build_dataset.py`)
