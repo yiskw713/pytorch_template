@@ -18,7 +18,7 @@ from torchvision.transforms import ColorJitter, RandomHorizontalFlip, Normalize
 # from libs.loss_fn.myloss import MyLoss
 # from libs.models.mymodel import MyModel
 from libs.checkpoint import save_checkpoint, resume
-from libs.class_label_map import get_label2id_map
+from libs.class_label_map import get_cls2id_map
 from libs.class_weight import get_class_weight
 from libs.dataset import FlowersDataset
 from libs.mean import get_mean, get_std
@@ -208,7 +208,7 @@ def main():
     print('\n------------------------Loading Model------------------------\n')
 
     # the number of classes
-    n_classes = len(get_label2id_map())
+    n_classes = len(get_cls2id_map())
 
     if CONFIG.model == 'resnet18':
         print('ResNet18 will be used as a model.')

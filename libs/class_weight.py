@@ -1,10 +1,10 @@
 import pandas as pd
 import torch
 
-from .class_label_map import get_label2id_map
+from .class_label_map import get_cls2id_map
 
 
-def get_class_num(train_csv_file='./csv/train.csv', n_classes=len(get_label2id_map())):
+def get_class_num(train_csv_file='./csv/train.csv', n_classes=len(get_cls2id_map())):
     """ get the number of samples in each class """
 
     df = pd.read_csv(train_csv_file)
@@ -21,7 +21,7 @@ def get_class_num(train_csv_file='./csv/train.csv', n_classes=len(get_label2id_m
     return class_num
 
 
-def get_class_weight(train_csv_file='./csv/train.csv', n_classes=len(get_label2id_map())):
+def get_class_weight(train_csv_file='./csv/train.csv', n_classes=len(get_cls2id_map())):
     """
     Class weight for CrossEntropy in Flowers Recognition Dataset
     Class weight is calculated in the way described in:
