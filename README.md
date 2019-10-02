@@ -51,5 +51,16 @@ csv に書き出す理由は，ラベル以外に情報を含めるのが簡単�
 また学習を回す際は，configuration を書いたファイルを作成して，それを読み込むような設定にしています．
 `argparse` などで細かく実験設定を記載するよりも，楽でみやすいし，何より実験設定を保存して置いたり，スクリプトを一気に回すことが容易だからです．
 
+## Training
+コードを各手順は以下の通り．
+
+``` python utils/build_dataset.py ```
+
+``` python train.py ./result/cfg1/config.yaml --resume ```
+
+``` python eval.py ./result/cfg1/config.yaml validation ```
+
+``` python eval.py ./result/cfg1/config.yaml test ```
+
 ## その他
 コードの可読性は本当に大事です．pep8は守ったり，コメントはできる限り残すようにした方がいいと思います．

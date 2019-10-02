@@ -11,7 +11,7 @@ def get_arguments():
     '''
 
     parser = argparse.ArgumentParser(
-        description='train a network for action recognition')
+        description='train a network for flowers recognition dataset')
     parser.add_argument(
         '--dataset_dir',
         type=str,
