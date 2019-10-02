@@ -58,9 +58,9 @@ csv に書き出す理由は，ラベル以外に情報を含めるのが簡単�
 
 ``` python train.py ./result/cfg1/config.yaml --resume ```
 
-``` python eval.py ./result/cfg1/config.yaml validation ```
+``` python test.py ./result/cfg1/config.yaml validation ```
 
-``` python eval.py ./result/cfg1/config.yaml test ```
+``` python test.py ./result/cfg1/config.yaml test ```
 
 ## その他
 コードの可読性は本当に大事です．pep8は守ったり，コメントはできる限り残すようにした方がいいと思います．
