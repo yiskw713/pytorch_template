@@ -210,6 +210,7 @@ def main():
     # the number of classes
     n_classes = len(get_cls2id_map())
 
+    # TODO: define a function to get models
     if CONFIG.model == 'resnet18':
         print('ResNet18 will be used as a model.')
         model = torchvision.models.resnet18(pretrained=True)

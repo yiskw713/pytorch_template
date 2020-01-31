@@ -25,7 +25,7 @@ root/ ──── csv/
         ├ .gitignore
         ├ README.md
         ├ requirements.txt
-        ├ test.py
+        ├ eval.py
         └ train.py
 ```
 
@@ -42,11 +42,12 @@ root/ ──── csv/
 5. その他学習に必要なコード (`libs/checkpoint.py`, `libs/class_weight.py`, `libs/metric.py`)
 6. 学習のコード (`train.py`)
     - config file を用いる (`result/cfg1/config.yaml`)
-7. テストのコード (`test.py`)
+7. 評価するためのコード (`eval.py`)
 8. 学習とテストのコードをいっぺんに回すためのシェルスクリプトの作成 (`run.sh`)
 
 このコードでは，データセットの画像とラベルのペアをあらかじめ csv file に書き出します．
 csv に書き出す理由は，ラベル以外に情報を含めるのが簡単だったり，json file などと比べて見やすいと個人的に思うからです．
+また，ラベル以外のメタ情報を使いたいときなども，それらの処理が容易だからです．
 
 また学習を回す際は，configuration を書いたファイルを作成して，それを読み込むような設定にしています．
 `argparse` などで細かく実験設定を記載するよりも，楽でみやすいし，何より実験設定を保存して置いたり，スクリプトを一気に回すことが容易だからです．
@@ -58,9 +59,13 @@ csv に書き出す理由は，ラベル以外に情報を含めるのが簡単�
 
 ``` python train.py ./result/cfg1/config.yaml --resume ```
 
-``` python test.py ./result/cfg1/config.yaml validation ```
+``` python eval.py ./result/cfg1/config.yaml validation ```
 
-``` python test.py ./result/cfg1/config.yaml test ```
+``` python eval.py ./result/cfg1/config.yaml test ```
+
+ここらへんの処理すべてshell scriptに書き込んで回すのがオススメ．
+``` sh run.sh ```
 
 ## その他
 コードの可読性は本当に大事です．pep8は守ったり，コメントはできる限り残すようにした方がいいと思います．
+VSCode を使っている人は[こちら](https://qiita.com/psychoroid/items/2c2acc06c900d2c0c8cb)を参考にコードの自動整形ができるようにしましょう．
