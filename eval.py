@@ -1,52 +1,53 @@
 import argparse
 import csv
-import numpy as np
 import os
-import pandas as pd
 import sys
+from typing import List, Tuple
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
-import torchvision
 import yaml
-
 from addict import Dict
 from sklearn.metrics import confusion_matrix, f1_score
 from torch.utils.data import DataLoader
-from torchvision.transforms import Compose, ToTensor, Normalize
+from torchvision.transforms import Compose, Normalize, ToTensor
 
-# from libs.loss_fn.myloss import MyLoss
-# from libs.models.mymodel import MyModel
-from libs.class_label_map import get_label2id_map
+from libs.class_label_map import get_cls2id_map
 from libs.dataset import FlowersDataset
 from libs.mean import get_mean, get_std
 from libs.meter import AverageMeter
 from libs.metric import accuracy
-# from libs.transformer import MyTransformer
+from libs.models import get_model
 
 
-def get_arguments():
-    '''
+def get_arguments() -> argparse.Namespace:
+    """
     parse all the arguments from command line inteface
     return a list of parsed arguments
-    '''
+    """
 
     parser = argparse.ArgumentParser(
-        description='train a network for image classification with Flowers Recognition Dataset')
-    parser.add_argument('config', type=str, help='path of a config file')
-    parser.add_argument('mode', type=str, help='validation or test')
+        description="train a network for image classification with Flowers Recognition Dataset"
+    )
+    parser.add_argument("config", type=str, help="path of a config file")
+    parser.add_argument("mode", type=str, help="validation or test")
     parser.add_argument(
-        '--model',
+        "--model",
         type=str,
         default=None,
-        help='path to the trained model. If you do not specify, the trained model, \
-            \'best_acc1_model.prm\' in result directory will be used.'
+        help="""path to the trained model. If you do not specify, the trained model,
+            'best_acc1_model.prm' in result directory will be used.""",
     )
 
     return parser.parse_args()
 
 
-def test(loader, model, n_classes, device):
-    top1 = AverageMeter('Acc@1', ':6.2f')
+def test(
+    loader: DataLoader, model: nn.Module, n_classes: int, device: str
+) -> Tuple[float, float, List[List[int]]]:
+    top1 = AverageMeter("Acc@1", ":6.2f")
 
     # keep predicted results and gts for calculate F1 Score
     gts = []
@@ -60,8 +61,8 @@ def test(loader, model, n_classes, device):
 
     with torch.no_grad():
         for i, sample in enumerate(loader):
-            x = sample['img']
-            t = sample['class_id']
+            x = sample["img"]
+            t = sample["class_id"]
             x = x.to(device)
             t = t.to(device)
 
@@ -80,9 +81,7 @@ def test(loader, model, n_classes, device):
             preds += list(pred.to("cpu").numpy())
 
             c_matrix += confusion_matrix(
-                t.to("cpu").numpy(),
-                pred.to('cpu').numpy(),
-                labels=[i for i in range(n_classes)]
+                t.to("cpu").numpy(), pred.to("cpu").numpy(), labels=[i for i in range(n_classes)],
             )
 
     f1s = f1_score(gts, preds, average="macro")
@@ -90,67 +89,39 @@ def test(loader, model, n_classes, device):
     return top1.avg, f1s, c_matrix
 
 
-def main():
+def main() -> None:
     args = get_arguments()
 
     # configuration
     CONFIG = Dict(yaml.safe_load(open(args.config)))
+    result_path = os.path.dirname(args.config)
 
     # cpu or cuda
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    if device == 'cuda':
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if device == "cuda":
         torch.backends.cudnn.benchmark = True
     else:
-        print('You have to use GPUs because training CNN is computationally expensive.')
+        print("You have to use GPUs because training CNN is computationally expensive.")
         sys.exit(1)
 
     # Dataloader
+    assert args.mode in ["validation", "test"]
     data = FlowersDataset(
-        CONFIG,
-        transform=Compose([
-            ToTensor(),
-            Normalize(mean=get_mean(), std=get_std())
-        ]),
-        mode='validation'
+        CONFIG.val_csv if args.mode == "validation" else CONFIG.test_csv,
+        transform=Compose([ToTensor(), Normalize(mean=get_mean(), std=get_std())]),
     )
 
     loader = DataLoader(
-        data,
-        batch_size=1,
-        shuffle=False,
-        num_workers=CONFIG.num_workers,
-        pin_memory=True
+        data, batch_size=1, shuffle=False, num_workers=CONFIG.num_workers, pin_memory=True,
     )
 
     # load model
-    print('\n------------------------Loading Model------------------------\n')
+    print("\n------------------------Loading Model------------------------\n")
 
     # the number of classes
-    n_classes = len(get_label2id_map())
+    n_classes = len(get_cls2id_map())
 
-    # TODO: define a function to get models
-    if CONFIG.model == 'resnet18':
-        print('ResNet18 will be used as a model.')
-        model = torchvision.models.resnet18(pretrained=True)
-        in_features = model.fc.in_features
-        model.fc = nn.Linear(
-            in_features=in_features,
-            out_features=n_classes,
-            bias=True
-        )
-    elif CONFIG.model == 'resnet34':
-        print('ResNet34 will be used as a model.')
-        model = torchvision.models.resnet34(pretrained=True)
-        in_features = model.fc.in_features
-        model.fc = nn.Linear(
-            in_features=in_features,
-            out_features=n_classes,
-            bias=True
-        )
-    else:
-        print('There is no model appropriate to your choice. '
-              'You have to choose resnet18 or resnet34 as a model in config.yaml')
-        sys.exit(1)
+    model = get_model(CONFIG.model, n_classes, pretrained=CONFIG.pretrained)
 
     # send the model to cuda/cpu
     model.to(device)
@@ -159,33 +130,30 @@ def main():
     if args.model is not None:
         state_dict = torch.load(args.model)
     else:
-        state_dict = torch.load(
-            os.path.join(CONFIG.result_path, 'best_acc1_model.prm')
-        )
+        state_dict = torch.load(os.path.join(result_path, "best_acc1_model.prm"))
+
     model.load_state_dict(state_dict)
 
     # train and validate model
-    print('\n------------------------Start testing------------------------\n')
+    print("\n------------------------Start testing------------------------\n")
 
     # validation
     acc1, f1s, c_matrix = test(loader, model, n_classes, device)
 
-    print(
-        'acc1: {:.5f}\tF1 Score: {:.5f}'.format(acc1, f1s))
+    print("acc1: {:.5f}\tF1 Score: {:.5f}".format(acc1, f1s))
 
     df = pd.DataFrame(
-        {'acc@1': [acc1], 'f1score': [f1s]},
-        columns=['acc@1', 'f1score'],
-        index=None
+        {"acc@1": [acc1], "f1score": [f1s]}, columns=["acc@1", "f1score"], index=None
     )
 
-    df.to_csv(
-        os.path.join(CONFIG.result_path, '{}_log.csv').format(args.mode), index=False)
+    df.to_csv(os.path.join(result_path, "{}_log.csv").format(args.mode), index=False)
 
-    with open(os.path.join(CONFIG.result_path, '{}_c_matrix.csv').format(args.mode), 'w') as file:
-        writer = csv.writer(file, lineterminator='\n')
+    with open(os.path.join(result_path, "{}_c_matrix.csv").format(args.mode), "w") as file:
+        writer = csv.writer(file, lineterminator="\n")
         writer.writerows(c_matrix)
 
+    print("Done.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
