@@ -69,14 +69,14 @@ csv に書き出す理由は，ラベル以外に情報を含めるのが簡単�
 
 ``` python utils/build_dataset.py ```
 
-``` python train.py ./result/r18_lr0.0005/config.yaml --resume ```
+``` python train.py ./result/r18_lr0.0005/config.yaml ```
 
 ``` python eval.py ./result/r18_lr0.0005/config.yaml validation ```
 
 ``` python eval.py ./result/r18_lr0.0005/config.yaml test ```
 
 ここらへんの処理すべてshell scriptに書き込んで回すのがオススメ．
-``` sh run.sh ```
+``` sh experiment.sh ```
 
 ## その他
 
