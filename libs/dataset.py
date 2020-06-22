@@ -1,10 +1,11 @@
 import os
 import pandas as pd
-import sys
 import torch
 
 from PIL import Image
 from torch.utils.data import Dataset
+from torchvision import transforms
+from typing import Any, Dict, Optional
 
 
 class FlowersDataset(Dataset):
@@ -13,44 +14,32 @@ class FlowersDataset(Dataset):
     csv を作る練習をかねて，データセットクラスを自作している．
     """
 
-    def __init__(self, config, transform=None, mode='training'):
+    def __init__(
+        self, csv_file: str, transform: Optional[transforms.Compose] = None
+    ) -> None:
         super().__init__()
+        assert os.path.exists(csv_file)
 
-        self.config = config
-
-        if mode == 'training':
-            csv_path = os.path.join(self.config.csv_dir, 'train.csv')
-        elif mode == 'validation':
-            csv_path = os.path.join(self.config.csv_dir, 'val.csv')
-        elif mode == 'test':
-            csv_path = os.path.join(self.config.csv_dir, 'test.csv')
-        else:
-            print('You have to choose training or validation as the dataset mode')
-            sys.exit(1)
+        csv_path = os.path.join(csv_file)
 
         self.df = pd.read_csv(csv_path)
         self.transform = transform
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.df)
 
-    def __getitem__(self, idx):
-        img_path = self.df.iloc[idx]['image_path']
+    def __getitem__(self, idx: int) -> Dict[str, Any]:
+        img_path = self.df.iloc[idx]["image_path"]
         img = Image.open(img_path)
 
         if self.transform is not None:
             img = self.transform(img)
 
-        cls_id = self.df.iloc[idx]['class_id']
+        cls_id = self.df.iloc[idx]["class_id"]
         cls_id = torch.tensor(cls_id).long()
 
-        label = self.df.iloc[idx]['label']
+        label = self.df.iloc[idx]["label"]
 
-        sample = {
-            'img': img,
-            'class_id': cls_id,
-            'label': label,
-            'img_path': img_path
-        }
+        sample = {"img": img, "class_id": cls_id, "label": label, "img_path": img_path}
 
         return sample

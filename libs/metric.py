@@ -1,7 +1,9 @@
+from typing import List
+
 import torch
 
 
-def accuracy(output, target, topk=(1,)):
+def accuracy(output: torch.Tensor, target: torch.Tensor, topk: List[int] = [1]) -> List[float]:
     """Computes the accuracy over the k top predictions for the specified values of k"""
     with torch.no_grad():
         maxk = max(topk)

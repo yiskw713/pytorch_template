@@ -9,3 +9,4 @@ __pycache__
 *.prm
 *.pth
 events.out.tfevents.*
+wandb
