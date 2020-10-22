@@ -7,14 +7,18 @@ import torch.optim as optim
 
 
 def save_checkpoint(
-    result_path: str, epoch: int, model: nn.Module, optimizer: optim.Optimizer, best_acc1: float,
+    result_path: str,
+    epoch: int,
+    model: nn.Module,
+    optimizer: optim.Optimizer,
+    best_loss: float,
 ) -> None:
 
     save_states = {
         "epoch": epoch,
         "state_dict": model.state_dict(),
         "optimizer": optimizer.state_dict(),
-        "best_acc1": best_acc1,
+        "best_loss": best_loss,
     }
 
     torch.save(save_states, os.path.join(result_path, "checkpoint.pth"))
@@ -30,11 +34,11 @@ def resume(
     checkpoint = torch.load(resume_path, map_location=lambda storage, loc: storage)
 
     begin_epoch = checkpoint["epoch"]
-    best_acc1 = checkpoint["best_acc1"]
+    best_loss = checkpoint["best_loss"]
     model.load_state_dict(checkpoint["state_dict"])
 
     optimizer.load_state_dict(checkpoint["optimizer"])
 
     print("training will start from {} epoch".format(begin_epoch))
 
-    return begin_epoch, model, optimizer, best_acc1
+    return begin_epoch, model, optimizer, best_loss

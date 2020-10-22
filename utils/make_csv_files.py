@@ -1,8 +1,12 @@
 import argparse
 import glob
 import os
+import sys
 
 import pandas as pd
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from libs.class_label_map import get_cls2id_map
 
 
 def get_arguments() -> argparse.Namespace:
@@ -11,22 +15,29 @@ def get_arguments() -> argparse.Namespace:
     return a list of parsed arguments
     """
 
-    parser = argparse.ArgumentParser(description="train a network for flowers recognition dataset")
-    parser.add_argument(
-        "--dataset_dir", type=str, default="./dataset/flowers/", help="path to a dataset dirctory"
+    parser = argparse.ArgumentParser(
+        description="make csv files for flowers recognition dataset"
     )
     parser.add_argument(
-        "--save_dir", type=str, default="./csv", help="a directory where csv files will be saved"
+        "--dataset_dir",
+        type=str,
+        default="./dataset/flowers/",
+        help="path to a dataset dirctory",
+    )
+    parser.add_argument(
+        "--save_dir",
+        type=str,
+        default="./csv",
+        help="a directory where csv files will be saved",
     )
 
     return parser.parse_args()
 
 
-cls2id_map = {"daisy": 0, "dandelion": 1, "rose": 2, "sunflower": 3, "tulip": 4}
-
-
 def main() -> None:
     args = get_arguments()
+
+    cls2id_map = get_cls2id_map()
 
     # img や label を保存するリスト
     train_img_paths = []
@@ -65,7 +76,11 @@ def main() -> None:
 
     # list を DataFrame に変換
     train_df = pd.DataFrame(
-        {"image_path": train_img_paths, "class_id": train_cls_ids, "label": train_cls_labels},
+        {
+            "image_path": train_img_paths,
+            "class_id": train_cls_ids,
+            "label": train_cls_labels,
+        },
         columns=["image_path", "class_id", "label"],
     )
 
@@ -75,7 +90,11 @@ def main() -> None:
     )
 
     test_df = pd.DataFrame(
-        {"image_path": test_img_paths, "class_id": test_cls_ids, "label": test_cls_labels},
+        {
+            "image_path": test_img_paths,
+            "class_id": test_cls_ids,
+            "label": test_cls_labels,
+        },
         columns=["image_path", "class_id", "label"],
     )
 
@@ -88,7 +107,7 @@ def main() -> None:
     val_df.to_csv(os.path.join(args.save_dir, "val.csv"), index=None)
     test_df.to_csv(os.path.join(args.save_dir, "test.csv"), index=None)
 
-    print("Done")
+    print("Finished making csv files.")
 
 
 if __name__ == "__main__":

@@ -3,9 +3,36 @@ import pandas as pd
 import torch
 
 from PIL import Image
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from typing import Any, Dict, Optional
+
+
+__all__ = ["get_dataloader"]
+
+
+def get_dataloader(
+    csv_file: str,
+    batch_size: int,
+    shuffle: bool,
+    num_workers: int,
+    pin_memory: bool,
+    drop_last: bool,
+    transform: Optional[transforms.Compose] = None,
+) -> DataLoader:
+
+    data = FlowersDataset(csv_file, transform=transform,)
+
+    dataloader = DataLoader(
+        data,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+        pin_memory=pin_memory,
+        drop_last=drop_last,
+    )
+
+    return dataloader
 
 
 class FlowersDataset(Dataset):

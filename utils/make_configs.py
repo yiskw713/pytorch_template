@@ -1,0 +1,95 @@
+import argparse
+import yaml
+import os
+import sys
+import dataclasses
+import itertools
+
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+
+from libs.config import Config
+
+
+def get_arguments() -> argparse.Namespace:
+    """
+    parse all the arguments from command line inteface
+    return a list of parsed arguments
+    """
+
+    parser = argparse.ArgumentParser(description="make configuration yaml files.")
+
+    parser.add_argument(
+        "--result_dir",
+        type=str,
+        default="./result",
+        help="path to a result directory",
+    )
+
+    fields = dataclasses.fields(Config)
+
+    for field in fields:
+        if isinstance(field.default, dataclasses._MISSING_TYPE):
+            parser.add_argument(
+                f"--{field.name}",
+                type=field.type,
+                nargs="*",
+                required=True,
+            )
+        else:
+            parser.add_argument(
+                f"--{field.name}",
+                type=field.type,
+                nargs="*",
+                default=field.default,
+            )
+
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = get_arguments()
+
+    # convert Namespace to dictionary.
+    args_dict = vars(args).copy()
+    del args_dict["result_dir"]
+
+    base_config = {}
+    variable_keys = []
+    variable_values = []
+
+    for k, v in args_dict.items():
+        if isinstance(v, list):
+            variable_keys.append(k)
+            variable_values.append(v)
+        else:
+            base_config[k] = v
+
+    # get direct product
+    product = itertools.product(*variable_values)
+
+    # make a directory and save configuration file there.
+    for values in product:
+        config = base_config.copy()
+        param_list = []
+        for k, v in zip(variable_keys, values):
+            config[k] = v
+            param_list.append(f"{k}-{v}")
+
+        dir_name = "_".join(param_list)
+        dir_path = os.path.join(args.result_dir, dir_name)
+
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+
+        config_path = os.path.join(dir_path, "config.yaml")
+
+        # save configuration file as yaml
+        with open(config_path, "w") as f:
+            yaml.dump(config, f, default_flow_style=False)
+
+    print("Finished making configuration files.")
+
+
+if __name__ == "__main__":
+    main()
