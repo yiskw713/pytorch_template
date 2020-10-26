@@ -9,6 +9,8 @@ project for pytorch implementation example of image classification
 * pyyaml
 * scikit-learn
 * wandb
+* pre-commit (for pre-commit formatting, type check and testing)
+* lizard (for pre-commit check of cyclomatic complexity)
 
 Please run `pip install -r requirements.txt` to install the necessary packages.
 
@@ -65,9 +67,15 @@ sh scripts/experiment.sh
 
 ## TODO
 
-- [ ] test code
-- [ ] mypy
-- [ ] pre-commit formatting
+* [x] pytorch implementation of image classification
+* [x] configuration class using `dataclasses.dataclass`
+* [x] auto generation of config yaml files
+* [x] shell script to run all the experiment
+* [x] support `typing` (type annotation)
+* [ ] test code (pre-commit check)
+* [x] `mypy` (pre-commit check)
+* [x] formatting (pre-commit `isort`, `black` and `flake8`)
+* [x] calculate cyclomatic complexity (pre-commit `lizard`)
 
 ## License
 

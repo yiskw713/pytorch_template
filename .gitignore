@@ -10,3 +10,4 @@ __pycache__
 *.pth
 events.out.tfevents.*
 wandb
+.mypy_cache
