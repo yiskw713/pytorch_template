@@ -1,9 +1,10 @@
 import argparse
-import yaml
-import os
-import sys
 import dataclasses
 import itertools
+import os
+import sys
+
+import yaml
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -23,7 +24,7 @@ def get_arguments() -> argparse.Namespace:
         "--result_dir",
         type=str,
         default="./result",
-        help="path to a result directory",
+        help="path to a directory where you want to make config files and directories.",
     )
 
     fields = dataclasses.fields(Config)

@@ -9,11 +9,11 @@ import yaml
 from torchvision.transforms import Compose, Normalize, ToTensor
 
 from libs.class_label_map import get_cls2id_map
-from libs.dataset import get_dataloader
-from libs.mean import get_mean, get_std
-from libs.models import get_model
 from libs.config import Config
+from libs.dataset import get_dataloader
 from libs.helper import evaluate
+from libs.mean_std import get_mean, get_std
+from libs.models import get_model
 
 
 def get_arguments() -> argparse.Namespace:

@@ -1,5 +1,5 @@
-import pprint
 import dataclasses
+import pprint
 
 
 @dataclasses.dataclass

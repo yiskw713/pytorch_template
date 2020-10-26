@@ -20,8 +20,8 @@ Flowers Recognition Dataset を使います．
 ## Directory Structure
 
 以下のようなディレクトリ構成を想定しています．
-基本的には，`libs`には `train.py` や `test.py` などメインのスクリプトを実行するのに必要なスクリプトをおきます．
-`utils`にはそれ以外のスクリプト(例: `make_csv_files.py` や結果を可視化するスクリプトなど)を配置します．
+基本的には，`libs`には `train.py` や `evaluate.py` などメインのスクリプトを実行するのに必要なスクリプトをおきます．
+`utils`にはそれ以外のスクリプト(例: `make_csv_files.py` や`make_configs.py`など，実行したいスクリプトに直接関係ないもの)を配置します．
 データセットの場所は，以下の通りでなくても大丈夫です．
 
 ```Directory Structure
@@ -29,6 +29,7 @@ root/ ──── csv/
         ├─ libs/
         ├─ result/
         ├─ utils/
+        ├─ notebook/
         ├─ dataset ─── flowers/
         ├─ scripts ─── experiment.sh
         ├ .gitignore
@@ -39,12 +40,22 @@ root/ ──── csv/
         └ train.py
 ```
 
+## このレポジトリの特徴
+
+* 実験設定を記述する`Config`クラスをpythonの`dataclass`で実装．
+  * 型のチェックや，値の過不足を確認できる
+  * イミュータブルなオブジェクトなので，誤って実験設定が変更されることがない
+* `uits/make_configs.py`で，configファイルを自動で生成できる
+* `scripts/experiment.sh`で，実験を一気に回せる
+* typingの使用
+* black / isort / flake8 によるコードの整形, 論理エラーの検出など
+
 ## コードを書く手順
 
 以下の順でコードを書いていきます．
 
 1. データセットクラスのための csv file の作成 (`utils/make_csv_files.py`)
-1. configファイルの自動生成 (`utils/make_configs.py`)
+1. `Config`クラスの定義`libs/config.py`と，configファイルの自動生成 (`utils/make_configs.py`)
 1. データセットクラスの作成 (`libs/dataset.py`)
     * データセットの画像に対する前処理のコード (`libs/transformer.py`)
     * 前処理のコードに必要な平均値，標準偏差を書いたスクリプト (`libs/mean.py`)

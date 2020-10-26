@@ -1,18 +1,15 @@
 import time
-from typing import Any, Tuple
+from typing import Any, List, Tuple
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from sklearn.metrics import f1_score
+from sklearn.metrics import confusion_matrix, f1_score
 from torch.utils.data import DataLoader
 
 from libs.meter import AverageMeter, ProgressMeter
 from libs.metric import accuracy
-import numpy as np
-
-from sklearn.metrics import confusion_matrix
-from typing import List
 
 
 def train(
