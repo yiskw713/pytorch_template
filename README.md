@@ -10,7 +10,6 @@ project for pytorch implementation example of image classification
 * scikit-learn
 * wandb
 * pre-commit (for pre-commit formatting, type check and testing)
-* lizard (for pre-commit check of cyclomatic complexity)
 
 Please run `pip install -r requirements.txt` to install the necessary packages.
 
@@ -22,18 +21,25 @@ Download the dataset from [HERE](https://www.kaggle.com/alxmamaev/flowers-recogn
 ## Directory Structure
 
 ```Directory Structure
-root/ ──── csv/
-        ├─ libs/
-        ├─ result/
-        ├─ utils/
-        ├─ dataset ─── flowers/
-        ├─ scripts ─── experiment.sh
-        ├ .gitignore
-        ├ README.md
-        ├ FOR_AOLAB_MEMBERS.md
-        ├ requirements.txt
-        ├ evaluate.py
-        └ train.py
+.
+├── FOR_AOLAB_MEMBERS.md
+├── LICENSE
+├── README.md
+├── dataset/
+│   └── flowers/
+├── requirements.txt
+├── .gitignore
+├── .pre-commit-config
+└── src/
+    ├── csv
+    ├── libs/
+    ├── utils
+    ├── notebook/
+    ├── result/
+    ├── scripts/
+    │   └── experiment.sh
+    ├── train.py
+    └── evaluate.py
 ```
 
 ## Features
@@ -41,11 +47,19 @@ root/ ──── csv/
 * configuration class using `dataclasses.dataclass` (`libs/config.py`)
   * type check.
   * detection of unnecessary / extra parameters in a specified configuration.
-  * `dataclass` is an immutable object, which prevents the setting from being changed by mistake.
+  * `dataclass` is an immutable object,
+  which prevents the setting from being changed by mistake.
 * automatically generating configuration files (`utils/make_configs.py`)
-  * e.g.) run `python utils/make_configs.py --model resnet18 resnet30 resnet50 --learning_rate 0.001 0.0001`,
-  then you can get all of the combinations with `model` and `learning_rate` (total 6 config files)
-  while the other parameters are set by default as described in `libs/config.py`.
+  * e.g.) run this command
+
+  ```bash
+  python utils/make_configs.py --model resnet18 resnet30 resnet50 --learning_rate 0.001 0.0001
+  ```
+
+  then you can get all of the combinations
+  with `model` and `learning_rate` (total 6 config files)
+  while the other parameters are set by default
+  as described in `libs/config.py`.
 * running all the experiments by running shell scripts (`scripts/experiment.sh`)
 * support type annotation (`typing`)
 * code formatting with `black`, `isort` and `flake8`
