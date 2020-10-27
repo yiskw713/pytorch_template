@@ -2,7 +2,8 @@ import os
 from typing import Optional
 
 import torch.nn as nn
-from class_weight import get_class_weight
+
+from .class_weight import get_class_weight
 
 __all__ = ["get_criterion"]
 

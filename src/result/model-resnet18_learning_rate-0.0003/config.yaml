@@ -3,7 +3,7 @@ height: 224
 learning_rate: 0.0003
 max_epoch: 50
 model: resnet18
-num_workers: -1
+num_workers: 2
 pretrained: true
 test_csv: ./csv/test.csv
 train_csv: ./csv/train.csv
