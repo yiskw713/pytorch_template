@@ -9,7 +9,7 @@ from sklearn.metrics import confusion_matrix, f1_score
 from torch.utils.data import DataLoader
 
 from libs.meter import AverageMeter, ProgressMeter
-from libs.metric import accuracy
+from libs.metric import calc_accuracy
 
 
 def train(
@@ -55,9 +55,11 @@ def train(
         loss = criterion(output, t)
 
         # measure accuracy and record loss
-        acc1 = accuracy(output, t, topk=(1,))
+        accs = calc_accuracy(output, t, topk=(1,))
+        acc1 = accs[0]
+
         losses.update(loss.item(), batch_size)
-        top1.update(acc1[0].item(), batch_size)
+        top1.update(acc1, batch_size)
 
         # keep predicted results and gts for calculate F1 Score
         _, pred = output.max(dim=1)
@@ -80,7 +82,7 @@ def train(
     # calculate F1 Score
     f1s = f1_score(gts, preds, average="macro")
 
-    return losses.avg, top1.avg, f1s
+    return losses.get_average(), top1.get_average(), f1s
 
 
 def validate(
@@ -108,13 +110,11 @@ def validate(
             loss = criterion(output, t)
 
             # measure accuracy and record loss
-            acc1 = accuracy(
-                output,
-                t,
-                topk=(1,),
-            )
+            accs = calc_accuracy(output, t, topk=(1,))
+            acc1 = accs[0]
+
             losses.update(loss.item(), batch_size)
-            top1.update(acc1[0].item(), batch_size)
+            top1.update(acc1, batch_size)
 
             # keep predicted results and gts for calculate F1 Score
             _, pred = output.max(dim=1)
@@ -123,7 +123,7 @@ def validate(
 
     f1s = f1_score(gts, preds, average="macro")
 
-    return losses.avg, top1.avg, f1s
+    return losses.get_average(), top1.get_average(), f1s
 
 
 def evaluate(
@@ -152,12 +152,9 @@ def evaluate(
             output = model(x)
 
             # measure accuracy and record loss
-            acc1 = accuracy(
-                output,
-                t,
-                topk=(1,),
-            )
-            top1.update(acc1[0].item(), batch_size)
+            accs = calc_accuracy(output, t, topk=(1,))
+            acc1 = accs[0]
+            top1.update(acc1, batch_size)
 
             # keep predicted results and gts for calculate F1 Score
             _, pred = output.max(dim=1)
@@ -172,4 +169,4 @@ def evaluate(
 
     f1s = f1_score(gts, preds, average="macro")
 
-    return top1.avg, f1s, c_matrix
+    return top1.get_average(), f1s, c_matrix

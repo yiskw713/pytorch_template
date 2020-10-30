@@ -38,9 +38,6 @@ def get_dataloader(
 
 
 class FlowersDataset(Dataset):
-    """Flowers Recognition Dataset 今回のデータセットは，torchvision.datasets.ImageFolder
-    でも実装可能だが， csv を作る練習をかねて，データセットクラスを自作している．"""
-
     def __init__(
         self, csv_file: str, transform: Optional[transforms.Compose] = None
     ) -> None:

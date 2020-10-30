@@ -7,7 +7,7 @@ import torch
 import yaml
 from torchvision.transforms import Compose, Normalize, ToTensor
 
-from libs.class_label_map import get_cls2id_map
+from libs.class_id_map import get_cls2id_map
 from libs.config import Config
 from libs.dataset import get_dataloader
 from libs.device import get_device

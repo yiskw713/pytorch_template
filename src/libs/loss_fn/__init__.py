@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import torch.nn as nn
 
@@ -9,9 +8,9 @@ __all__ = ["get_criterion"]
 
 
 def get_criterion(
-    use_class_weight: bool = False,
-    train_csv_file: Optional[str] = None,
-    device: Optional[str] = None,
+    use_class_weight: bool,
+    train_csv_file: str,
+    device: str,
 ) -> nn.Module:
 
     if use_class_weight:

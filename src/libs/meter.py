@@ -7,19 +7,23 @@ class AverageMeter(object):
     def __init__(self, name: str, fmt: str = ":f") -> None:
         self.name = name
         self.fmt = fmt
-        self.reset()
+        self._reset()
 
-    def reset(self) -> None:
+    def _reset(self) -> None:
         self.val = 0.0
         self.avg = 0.0
         self.sum = 0.0
         self.count = 0
 
     def update(self, val: float, n: int = 1) -> None:
+        # `val` is the average value of `n` samples
         self.val = val
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+
+    def get_average(self) -> float:
+        return self.avg
 
     def __str__(self) -> str:
         fmtstr = "{name} {val" + self.fmt + "} (avg. {avg" + self.fmt + "})"

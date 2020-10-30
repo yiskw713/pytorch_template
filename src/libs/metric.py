@@ -3,11 +3,12 @@ from typing import List, Tuple
 import torch
 
 
-def accuracy(
+def calc_accuracy(
     output: torch.Tensor, target: torch.Tensor, topk: Tuple[int] = (1,)
-) -> List[torch.Tensor]:
-    """Computes the accuracy over the k top predictions for the specified
-    values of k."""
+) -> List[float]:
+    """Computes the accuracy over the k top predictions for the specifiedvalues
+    of k."""
+
     with torch.no_grad():
         maxk = max(topk)
         batch_size = target.size(0)
@@ -20,5 +21,5 @@ def accuracy(
         for k in topk:
             correct_k = correct[:k].view(-1)
             correct_k = correct_k.float().sum(0, keepdim=True)
-            res.append(correct_k.mul_(100.0 / batch_size))
+            res.append(correct_k.mul_(100.0 / batch_size).item())
         return res

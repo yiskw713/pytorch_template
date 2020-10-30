@@ -1,5 +1,3 @@
-import sys
-
 import torch
 
 
@@ -9,8 +7,10 @@ def get_device(allow_only_gpu: bool = True):
         torch.backends.cudnn.benchmark = True
     else:
         if allow_only_gpu:
-            print("You should use GPUs for training CNNs.")
-            sys.exit(0)
+            raise ValueError(
+                """You can use only cpu while you don't allow the use of cpu alone during training.
+                """
+            )
 
         device = "cpu"
         print(

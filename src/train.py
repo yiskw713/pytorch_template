@@ -5,7 +5,6 @@ import time
 import pandas as pd
 import torch
 import torch.optim as optim
-import wandb
 import yaml
 from torchvision.transforms import (
     ColorJitter,
@@ -16,8 +15,9 @@ from torchvision.transforms import (
     ToTensor,
 )
 
+import wandb
 from libs.checkpoint import resume, save_checkpoint
-from libs.class_label_map import get_cls2id_map
+from libs.class_id_map import get_cls2id_map
 from libs.config import Config
 from libs.dataset import get_dataloader
 from libs.device import get_device
