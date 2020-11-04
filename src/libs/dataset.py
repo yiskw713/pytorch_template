@@ -47,6 +47,7 @@ class FlowersDataset(Dataset):
         csv_path = os.path.join(csv_file)
 
         self.df = pd.read_csv(csv_path)
+        self.n_classes = self.df["class_id"].nunique()
         self.transform = transform
 
     def __len__(self) -> int:
@@ -67,3 +68,6 @@ class FlowersDataset(Dataset):
         sample = {"img": img, "class_id": cls_id, "label": label, "img_path": img_path}
 
         return sample
+
+    def get_n_classes(self) -> int:
+        return self.n_classes

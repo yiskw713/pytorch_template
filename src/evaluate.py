@@ -12,6 +12,7 @@ from libs.config import Config
 from libs.dataset import get_dataloader
 from libs.device import get_device
 from libs.helper import evaluate
+from libs.loss_fn import get_criterion
 from libs.mean_std import get_mean, get_std
 from libs.models import get_model
 
@@ -81,16 +82,21 @@ def main() -> None:
 
     model.load_state_dict(state_dict)
 
+    # criterion for loss
+    criterion = get_criterion(config.use_class_weight, config.train_csv, device)
+
     # train and validate model
     print("\n------------------------Start testing------------------------\n")
 
     # evaluation
-    acc1, f1s, c_matrix = evaluate(loader, model, n_classes, device)
+    loss, acc1, f1s, c_matrix = evaluate(loader, model, criterion, device)
 
     print("acc1: {:.5f}\tF1 Score: {:.5f}".format(acc1, f1s))
 
     df = pd.DataFrame(
-        {"acc@1": [acc1], "f1score": [f1s]}, columns=["acc@1", "f1score"], index=None
+        {"loss": [loss], "acc@1": [acc1], "f1score": [f1s]},
+        columns=["loss", "acc@1", "f1score"],
+        index=None,
     )
 
     df.to_csv(os.path.join(result_path, "{}_log.csv").format(args.mode), index=False)

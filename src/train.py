@@ -21,7 +21,7 @@ from libs.class_id_map import get_cls2id_map
 from libs.config import Config
 from libs.dataset import get_dataloader
 from libs.device import get_device
-from libs.helper import train, validate
+from libs.helper import evaluate, train
 from libs.loss_fn import get_criterion
 from libs.mean_std import get_mean, get_std
 from libs.models import get_model
@@ -164,7 +164,9 @@ def main() -> None:
 
         # validation
         start = time.time()
-        val_loss, val_acc1, val_f1s = validate(val_loader, model, criterion, device)
+        val_loss, val_acc1, val_f1s, c_matrix = evaluate(
+            val_loader, model, criterion, device
+        )
         val_time = int(time.time() - start)
 
         # save a model if top1 acc is higher than ever
@@ -231,6 +233,9 @@ def main() -> None:
 
     # save models
     torch.save(model.state_dict(), os.path.join(result_path, "final_model.prm"))
+
+    # delete checkpoint
+    os.remove(os.path.join(result_path, "checkpoint.pth"))
 
     print("Done")
 
