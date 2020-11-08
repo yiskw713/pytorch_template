@@ -7,7 +7,7 @@ from typing import Dict, List, Union
 import pandas as pd
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from libs.class_label_map import get_cls2id_map
+from libs.class_id_map import get_cls2id_map
 
 
 def get_arguments() -> argparse.Namespace:
@@ -41,6 +41,7 @@ def split_data(
 ) -> None:
 
     for i, path in enumerate(img_paths):
+        path = os.path.abspath(path)
         if i % 5 == 4:
             # for test
             data["test"]["image_path"].append(path)

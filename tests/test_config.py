@@ -1,12 +1,13 @@
 from typing import Any, Dict
 
 import pytest
+from _pytest.capture import CaptureFixture
 
 from src.libs.config import Config
 
 
 class TestConfig(object):
-    @pytest.fixture
+    @pytest.fixture()
     def base_dict(self) -> Dict[str, Any]:
         _dict = {
             "batch_size": 32,
@@ -31,3 +32,10 @@ class TestConfig(object):
 
             with pytest.raises(TypeError):
                 Config(**_dict)
+
+    def test_post_init(self, base_dict: Dict[str, Any], capfd: CaptureFixture) -> None:
+        Config(**base_dict)
+
+        # test printed string
+        _, err = capfd.readouterr()
+        assert err == ""

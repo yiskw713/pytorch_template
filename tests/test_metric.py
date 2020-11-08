@@ -4,7 +4,7 @@ import torch
 from src.libs.metric import calc_accuracy
 
 
-@pytest.fixture
+@pytest.fixture()
 def predictions() -> torch.Tensor:
     # shape (N, C) = (5, 5)
     preds = torch.tensor(
@@ -19,7 +19,7 @@ def predictions() -> torch.Tensor:
     return preds
 
 
-@pytest.fixture
+@pytest.fixture()
 def ground_truths() -> torch.Tensor:
     # shape (N, ) = (1, )
     gts = torch.tensor([4, 3, 2, 1, 0])

@@ -8,8 +8,8 @@ import torch.optim as optim
 from sklearn.metrics import confusion_matrix, f1_score
 from torch.utils.data import DataLoader
 
-from libs.meter import AverageMeter, ProgressMeter
-from libs.metric import calc_accuracy
+from .meter import AverageMeter, ProgressMeter
+from .metric import calc_accuracy
 
 __all__ = ["train", "evaluate"]
 
@@ -63,6 +63,7 @@ def train(
     optimizer: optim.Optimizer,
     epoch: int,
     device: str,
+    interval_of_progress: int = 50,
 ) -> Tuple[float, float, float]:
 
     batch_time = AverageMeter("Time", ":6.3f")
@@ -104,7 +105,7 @@ def train(
         end = time.time()
 
         # show progress bar per 50 iteration
-        if i != 0 and i % 50 == 0:
+        if i != 0 and i % interval_of_progress == 0:
             progress.display(i)
 
     # calculate F1 Score

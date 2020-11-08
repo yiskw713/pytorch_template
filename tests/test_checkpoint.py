@@ -11,7 +11,7 @@ from torchvision import models
 from src.libs.checkpoint import resume, save_checkpoint
 
 
-@pytest.fixture
+@pytest.fixture()
 def model_optim() -> Tuple[nn.Module, optim.Optimizer]:
     model = models.resnet18()
     optimizer = optim.Adam(model.parameters(), lr=0.1)

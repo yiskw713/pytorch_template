@@ -4,7 +4,7 @@ from _pytest.capture import CaptureFixture
 from src.libs.meter import AverageMeter, ProgressMeter
 
 
-@pytest.fixture
+@pytest.fixture()
 def average_meter() -> AverageMeter:
     meter = AverageMeter("acc", ":.1f")
     meter.update(8.0, 1.0)
