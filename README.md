@@ -86,11 +86,11 @@ sh scripts/experiment.sh
 * [x] auto generation of config yaml files
 * [x] shell script to run all the experiment
 * [x] support `typing` (type annotation)
-* [x] test code (pre-commit check)
-  * [ ] how to write test codes for `get_dataloader` / `train.py` / `evaluate.py`
+* [x] test code (run testing with pre-commit check)
 * [x] `mypy` (pre-commit check)
 * [x] formatting (pre-commit `isort`, `black` and `flake8`)
 * [x] calculate cyclomatic complexity / expression complexity / cognitive complexity (`flake8` extension)
+* [ ] CI for testing using GitHub Actions
 
 ## License
 

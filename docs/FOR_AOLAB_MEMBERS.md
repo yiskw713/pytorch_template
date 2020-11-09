@@ -43,8 +43,10 @@ root/ ──── csv/
 ## このレポジトリの特徴
 
 * 実験設定を記述する`Config`クラスをpythonの`dataclass`で実装．
+
   * 型のチェックや，値の過不足を確認できる
   * イミュータブルなオブジェクトなので，誤って実験設定が変更されることがない
+
 * `uits/make_configs.py`で，configファイルを自動で生成できる
 * `scripts/experiment.sh`で，実験を一気に回せる
 * typingの使用
@@ -57,14 +59,20 @@ root/ ──── csv/
 1. データセットクラスのための csv file の作成 (`utils/make_csv_files.py`)
 1. `Config`クラスの定義`libs/config.py`と，configファイルの自動生成 (`utils/make_configs.py`)
 1. データセットクラスの作成 (`libs/dataset.py`)
-    * データセットの画像に対する前処理のコード (`libs/transformer.py`)
-    * 前処理のコードに必要な平均値，標準偏差を書いたスクリプト (`libs/mean.py`)
-    * クラスのindex とラベルの対応を記すスクリプト (`libs/class_weight_map.py`)
+
+    \- データセットの画像に対する前処理のコード (`libs/transformer.py`)
+
+    \- 前処理のコードに必要な平均値，標準偏差を書いたスクリプト (`libs/mean.py`)
+
+    \- クラスのindex とラベルの対応を記すスクリプト (`libs/class_weight_map.py`)
+
 1. モデルの定義 (e.g. `libs/models/mymodel.py`)
 1. ロス関数の定義 (e.g. `libs/loss_fn/myloss.py`)
 1. その他学習に必要なコード (`libs/checkpoint.py`, `libs/class_weight.py`, `libs/metric.py`)
 1. 学習のコード (`train.py`)
-    * config file を用いる (`result/r18_lr0.0005/config.yaml`)
+
+    \- config file を用いる (`result/r18_lr0.0005/config.yaml`)
+
 1. 評価するためのコード (`evaluate.py`)
 1. 学習とテストのコードをいっぺんに回すためのシェルスクリプトの作成 (`experiment.sh`)
 
