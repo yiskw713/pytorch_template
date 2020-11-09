@@ -5,7 +5,6 @@ import time
 import pandas as pd
 import torch
 import torch.optim as optim
-import wandb
 import yaml
 from torchvision.transforms import (
     ColorJitter,
@@ -16,6 +15,7 @@ from torchvision.transforms import (
     ToTensor,
 )
 
+import wandb
 from libs.checkpoint import resume, save_checkpoint
 from libs.class_id_map import get_cls2id_map
 from libs.config import Config
@@ -152,7 +152,7 @@ def main() -> None:
         wandb.watch(model, log="all")
 
     # train and validate model
-    print("\n------------------------Start training------------------------\n")
+    print("---------- Start training ----------")
 
     for epoch in range(begin_epoch, config.max_epoch):
         # training
@@ -218,7 +218,7 @@ def main() -> None:
             )
 
         print(
-            """epoch: {}\tepoch time[sec]: {}\tlr: {}\ttrain loss: {:.4f}\t
+            """epoch: {}\tepoch time[sec]: {}\tlr: {}\ttrain loss: {:.4f}\t\
             val loss: {:.4f} val_acc1: {:.5f}\tval_f1s: {:.5f}
             """.format(
                 epoch,

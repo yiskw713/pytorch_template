@@ -86,12 +86,12 @@ def main() -> None:
     criterion = get_criterion(config.use_class_weight, config.train_csv, device)
 
     # train and validate model
-    print("\n------------------------Start testing------------------------\n")
+    print(f"---------- Start evaluation for {args.mode} data ----------")
 
     # evaluation
     loss, acc1, f1s, c_matrix = evaluate(loader, model, criterion, device)
 
-    print("acc1: {:.5f}\tF1 Score: {:.5f}".format(acc1, f1s))
+    print("loss: {:.5f}\tacc1: {:.2f}\tF1 Score: {:.2f}".format(loss, acc1, f1s))
 
     df = pd.DataFrame(
         {"loss": [loss], "acc@1": [acc1], "f1score": [f1s]},
