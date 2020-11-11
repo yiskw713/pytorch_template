@@ -1,0 +1,16 @@
+batch_size: 32
+height: 224
+learning_rate: 0.0003
+max_epoch: 50
+model: resnet18
+num_workers: 2
+pretrained: true
+test_csv: ./csv/test.csv
+train_csv: ./csv/train.csv
+use_class_weight: true
+val_csv: ./csv/val.csv
+width: 224
+topk:
+  - 1
+  - 3
+  - 5

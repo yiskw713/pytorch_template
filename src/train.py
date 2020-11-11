@@ -5,7 +5,7 @@ import time
 import pandas as pd
 import torch
 import torch.optim as optim
-import yaml
+import wandb
 from torchvision.transforms import (
     ColorJitter,
     Compose,
@@ -15,10 +15,9 @@ from torchvision.transforms import (
     ToTensor,
 )
 
-import wandb
 from libs.checkpoint import resume, save_checkpoint
 from libs.class_id_map import get_cls2id_map
-from libs.config import Config
+from libs.config import get_config
 from libs.dataset import get_dataloader
 from libs.device import get_device
 from libs.helper import evaluate, train
@@ -55,9 +54,7 @@ def main() -> None:
     args = get_arguments()
 
     # configuration
-    with open(args.config, "r") as f:
-        config_dict = yaml.safe_load(f)
-    config = Config(**config_dict)
+    config = get_config(args.config)
 
     # save log files in the directory which contains config file.
     result_path = os.path.dirname(args.config)
