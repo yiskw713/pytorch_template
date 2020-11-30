@@ -68,7 +68,9 @@ class Config:
                     f"The type of '{field}' field is supposed to be {field_type}."
                 )
 
-    def _type_check_element(self, field, vals, element_type):
+    def _type_check_element(
+        self, field: str, vals: Tuple[Any], element_type: type
+    ) -> None:
         for val in vals:
             if type(val) is not element_type:
                 raise TypeError(
@@ -76,7 +78,7 @@ class Config:
                 )
 
 
-def convert_list2tuple(_dict: Dict[str, Any]):
+def convert_list2tuple(_dict: Dict[str, Any]) -> Dict[str, Any]:
     # cannot use list in dataclass because mutable defaults are not allowed.
     for key, val in _dict.items():
         if isinstance(val, list):
@@ -85,7 +87,7 @@ def convert_list2tuple(_dict: Dict[str, Any]):
     return _dict
 
 
-def get_config(config_path: str):
+def get_config(config_path: str) -> Config:
     with open(config_path, "r") as f:
         config_dict = yaml.safe_load(f)
 

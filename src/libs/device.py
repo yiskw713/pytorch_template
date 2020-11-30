@@ -1,7 +1,7 @@
 import torch
 
 
-def get_device(allow_only_gpu: bool = True):
+def get_device(allow_only_gpu: bool = True) -> str:
     if torch.cuda.is_available():
         device = "cuda"
         torch.backends.cudnn.benchmark = True
