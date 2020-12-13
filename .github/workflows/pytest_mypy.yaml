@@ -30,3 +30,7 @@ jobs:
       # mypy
       - name: Type check
         run: poetry run mypy . --ignore-missing-imports
+      
+      # pytest
+      - name: Pytest
+        run: poetry run pytest -v --cov=src --cov-report term-missing

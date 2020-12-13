@@ -19,7 +19,7 @@ def calc_accuracy(
 
         res = []
         for k in topk:
-            correct_k = correct[:k].view(-1)
+            correct_k = correct[:k].contiguous().view(-1)
             correct_k = correct_k.float().sum(0, keepdim=True)
             res.append(correct_k.mul_(100.0 / batch_size).item())
         return res
