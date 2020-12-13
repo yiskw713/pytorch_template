@@ -13,8 +13,8 @@ repos:
     args: [--allow-missing-credentials]
   - id: detect-private-key
   - id: end-of-file-fixer
-  # - id: name-tests-test
-    # args: [--django]  # to match `test*.py`.
+  - id: name-tests-test
+    args: [--django]  # to match `test*.py`.
   # - id: no-commit-to-branch   # to protect specific branches from direct checkins.
     # args: [--branch, master]
   - id: pretty-format-json

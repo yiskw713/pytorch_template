@@ -30,5 +30,33 @@ class TrainLogger(object):
     def _save_log(self) -> None:
         self.df.to_csv(self.log_path, index=False)
 
-    def update(self):
-        pass
+    def update(
+        self,
+        epoch,
+        lr,
+        train_time,
+        train_loss,
+        train_acc,
+        train_f1s,
+        val_time,
+        val_loss,
+        val_acc,
+        val_f1s,
+    ):
+        tmp = pd.Series(
+            [
+                epoch,
+                lr,
+                train_time,
+                train_loss,
+                train_acc,
+                train_f1s,
+                val_time,
+                val_loss,
+                val_acc,
+                val_f1s,
+            ],
+            index=self.columns,
+        )
+        self.df = self.df.append(tmp, ignore_index=True)
+        self._save_log()
