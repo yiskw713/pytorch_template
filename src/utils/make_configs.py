@@ -14,6 +14,17 @@ from typing import Any, Dict, List, Tuple
 from libs.config import Config
 
 
+def str2bool(val: str) -> bool:
+    if isinstance(val, bool):
+        return val
+    if val.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif val.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
 def get_arguments() -> argparse.Namespace:
     """parse all the arguments from command line inteface return a list of
     parsed arguments."""
@@ -30,17 +41,23 @@ def get_arguments() -> argparse.Namespace:
     fields = dataclasses.fields(Config)
 
     for field in fields:
+        type_func = str2bool if field.type is bool else field.type
+
         if isinstance(field.default, dataclasses._MISSING_TYPE):
+            # default value is not set.
+            # do not specify boolean type in argparse
+            # ref: https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
             parser.add_argument(
                 f"--{field.name}",
-                type=field.type,
+                type=type_func,
                 nargs="*",
                 required=True,
             )
         else:
+            # default value is provided in config dataclass.
             parser.add_argument(
                 f"--{field.name}",
-                type=field.type,
+                type=type_func,
                 nargs="*",
                 default=field.default,
             )
