@@ -13,4 +13,3 @@ wandb
 wandb_result
 .mypy_cache
 .coverage*
-src/csv/*.csv

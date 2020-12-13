@@ -3,7 +3,7 @@ on: push
 
 jobs:
   mypy:
-    name: running mypy
+    name: running mypy and pytest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
