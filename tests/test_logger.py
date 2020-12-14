@@ -36,6 +36,9 @@ def test_update(epoch_result: Tuple[int], capfd: CaptureFixture):
     assert os.path.exists(log_path)
     assert len(logger.df) == 1
 
+    logger.update(*epoch_result)
+    assert len(logger.df) == 2
+
 
 def test_init_load():
     log_path = "./tests/tmp/no_exist_log.csv"
@@ -46,7 +49,7 @@ def test_init_load():
     log_path = "./tests/tmp/log.csv"
     logger = TrainLogger(log_path, True)
 
-    assert len(logger.df) == 1
+    assert len(logger.df) == 2
     assert logger.df.iloc[0]["epoch"] == 0
     assert logger.df.iloc[0]["lr"] == 0.1
     assert logger.df.iloc[0]["train_time[sec]"] == 20
