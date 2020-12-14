@@ -104,7 +104,7 @@ def test_train(mocker: MockFixture, model_optimizer, criterion):
     )
 
     loader = get_dataloader(
-        "src/csv/train.csv",
+        "./tests/sample/pytest_train.csv",
         batch_size=2,
         shuffle=False,
         num_workers=1,
@@ -143,7 +143,7 @@ def test_evaluate(mocker: MockFixture, model_optimizer, criterion):
     )
 
     loader = get_dataloader(
-        "src/csv/test.csv",
+        "./tests/sample/pytest_test.csv",
         batch_size=2,
         shuffle=False,
         num_workers=1,
