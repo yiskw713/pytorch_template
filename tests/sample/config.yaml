@@ -5,10 +5,10 @@ max_epoch: 50
 model: resnet18
 num_workers: 2
 pretrained: true
-test_csv: ./csv/test.csv
-train_csv: ./csv/train.csv
+test_csv: ./tests/sample/pytest_test.csv
+train_csv: ./tests/sample/pytest_train.csv
 use_class_weight: true
-val_csv: ./csv/val.csv
+val_csv: ./tests/sample/pytest_val.csv
 width: 224
 topk:
   - 1

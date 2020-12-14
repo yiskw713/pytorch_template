@@ -9,7 +9,7 @@ from src.libs.dataset import FlowersDataset, get_dataloader
 @pytest.mark.parametrize("batch_size", [1, 2])
 def test_get_dataloader(batch_size):
     loader = get_dataloader(
-        csv_file="src/csv/train.csv",
+        csv_file="./tests/sample/pytest_train.csv",
         batch_size=batch_size,
         shuffle=True,
         num_workers=1,
@@ -23,7 +23,7 @@ def test_get_dataloader(batch_size):
         ),
     )
 
-    assert len(loader) == 2597 // batch_size
+    assert len(loader) == 8 // batch_size
     assert isinstance(loader, DataLoader)
 
     for sample in loader:
@@ -41,14 +41,14 @@ def test_get_dataloader(batch_size):
 class TestFlowersDataset(object):
     @pytest.fixture()
     def data(self):
-        data = FlowersDataset("src/csv/train.csv")
+        data = FlowersDataset("./tests/sample/pytest_train.csv")
         return data
 
     def test_len(self, data):
-        assert len(data) == 2597
+        assert len(data) == 8
 
     def test_get_n_classes(self, data):
-        assert data.get_n_classes() == 5
+        assert data.get_n_classes() == 1
 
     def test_getitem(self, data):
         sample = data.__getitem__(0)

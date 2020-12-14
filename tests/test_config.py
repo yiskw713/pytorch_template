@@ -16,11 +16,11 @@ def base_dict() -> Dict[str, Any]:
         "model": "resnet18",
         "num_workers": 2,
         "pretrained": True,
-        "test_csv": "./csv/test.csv",
+        "test_csv": "./tests/sample/pytest_test.csv",
         "topk": (1, 3, 5),
-        "train_csv": "./csv/train.csv",
+        "train_csv": "./tests/sample/pytest_train.csv",
         "use_class_weight": True,
-        "val_csv": "./csv/val.csv",
+        "val_csv": "./tests/sample/pytest_val.csv",
         "width": 224,
     }
     return _dict

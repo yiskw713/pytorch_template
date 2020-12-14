@@ -1,8 +1,8 @@
-name: mypy
+name: mypy_pytest
 on: push
 
 jobs:
-  mypy:
+  mypy_pytest:
     name: running mypy and pytest
     runs-on: ubuntu-latest
     steps:

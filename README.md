@@ -1,5 +1,7 @@
 # Image Classification Template
 
+![status-badge](https://github.com/yiskw713/pytorch_template/workflows/mypy_pytest/badge.svg)
+
 project for pytorch implementation example of image classification
 
 ## Requirements

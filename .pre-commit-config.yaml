@@ -13,8 +13,8 @@ repos:
     args: [--allow-missing-credentials]
   - id: detect-private-key
   - id: end-of-file-fixer
-  # - id: name-tests-test
-    # args: [--django]  # to match `test*.py`.
+  - id: name-tests-test
+    args: [--django]  # to match `test*.py`.
   # - id: no-commit-to-branch   # to protect specific branches from direct checkins.
     # args: [--branch, master]
   - id: pretty-format-json
@@ -63,19 +63,19 @@ repos:
       # ignore line length of makrdownlint
       args: [-r, ~MD013]
 
-# for javascript / typescript
-- repo: https://github.com/pre-commit/mirrors-eslint
-  rev: master  # Use the sha / tag you want to point at
-  hooks:
-  - id: eslint
-    files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
-    types: [file]
+# # for javascript / typescript
+# - repo: https://github.com/pre-commit/mirrors-eslint
+#   rev: master  # Use the sha / tag you want to point at
+#   hooks:
+#   - id: eslint
+#     files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
+#     types: [file]
 
-# for rust
-- repo: https://github.com/doublify/pre-commit-rust
-  rev: master
-  hooks:
-  - id: fmt
-    name: rust-fmt
-  - id: cargo-check
-    name: rust-cargo-check
+# # for rust
+# - repo: https://github.com/doublify/pre-commit-rust
+#   rev: master
+#   hooks:
+#   - id: fmt
+#     name: rust-fmt
+#   - id: cargo-check
+#     name: rust-cargo-check
