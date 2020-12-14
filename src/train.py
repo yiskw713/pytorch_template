@@ -2,7 +2,6 @@ import argparse
 import os
 import time
 
-import pandas as pd
 import torch
 import torch.optim as optim
 import wandb
@@ -21,6 +20,7 @@ from libs.config import get_config
 from libs.dataset import get_dataloader
 from libs.device import get_device
 from libs.helper import evaluate, train
+from libs.logger import TrainLogger
 from libs.loss_fn import get_criterion
 from libs.mean_std import get_mean, get_std
 from libs.models import get_model
@@ -42,9 +42,9 @@ def get_arguments() -> argparse.Namespace:
         help="Add --resume option if you start training from checkpoint.",
     )
     parser.add_argument(
-        "--no_wandb",
+        "--use_wandb",
         action="store_true",
-        help="Add --no_wandb option if you do not want to use wandb.",
+        help="Add --use_wandb option if you want to use wandb.",
     )
 
     return parser.parse_args()
@@ -109,35 +109,20 @@ def main() -> None:
     # keep training and validation log
     begin_epoch = 0
     best_loss = float("inf")
-    log = pd.DataFrame(
-        columns=[
-            "epoch",
-            "lr",
-            "train_time[sec]",
-            "train_loss",
-            "train_acc@1",
-            "train_f1s",
-            "val_time[sec]",
-            "val_loss",
-            "val_acc@1",
-            "val_f1s",
-        ]
-    )
 
     # resume if you want
     if args.resume:
         resume_path = os.path.join(result_path, "checkpoint.pth")
         begin_epoch, model, optimizer, best_loss = resume(resume_path, model, optimizer)
 
-        log_path = os.path.join(result_path, "log.csv")
-        assert os.path.exists(log_path), "there is no checkpoint at the result folder"
-        log = pd.read_csv(log_path)
+    log_path = os.path.join(result_path, "log.csv")
+    logger = TrainLogger(log_path, resume=args.resume)
 
     # criterion for loss
     criterion = get_criterion(config.use_class_weight, config.train_csv, device)
 
     # Weights and biases
-    if not args.no_wandb:
+    if args.use_wandb:
         wandb.init(
             name=experiment_name,
             config=config,
@@ -178,27 +163,21 @@ def main() -> None:
         save_checkpoint(result_path, epoch, model, optimizer, best_loss)
 
         # write logs to dataframe and csv file
-        tmp = pd.Series(
-            [
-                epoch,
-                optimizer.param_groups[0]["lr"],
-                train_time,
-                train_loss,
-                train_acc1,
-                train_f1s,
-                val_time,
-                val_loss,
-                val_acc1,
-                val_f1s,
-            ],
-            index=log.columns,
+        logger.update(
+            epoch,
+            optimizer.param_groups[0]["lr"],
+            train_time,
+            train_loss,
+            train_acc1,
+            train_f1s,
+            val_time,
+            val_loss,
+            val_acc1,
+            val_f1s,
         )
 
-        log = log.append(tmp, ignore_index=True)
-        log.to_csv(os.path.join(result_path, "log.csv"), index=False)
-
         # save logs to wandb
-        if not args.no_wandb:
+        if args.use_wandb:
             wandb.log(
                 {
                     "lr": optimizer.param_groups[0]["lr"],
@@ -213,20 +192,6 @@ def main() -> None:
                 },
                 step=epoch,
             )
-
-        print(
-            """epoch: {}\tepoch time[sec]: {}\tlr: {}\ttrain loss: {:.4f}\t\
-            val loss: {:.4f} val_acc1: {:.5f}\tval_f1s: {:.5f}
-            """.format(
-                epoch,
-                train_time + val_time,
-                optimizer.param_groups[0]["lr"],
-                train_loss,
-                val_loss,
-                val_acc1,
-                val_f1s,
-            )
-        )
 
     # save models
     torch.save(model.state_dict(), os.path.join(result_path, "final_model.prm"))
