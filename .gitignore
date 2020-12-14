@@ -14,3 +14,4 @@ wandb_result
 .mypy_cache
 .coverage*
 !tests/sample/*.jpg
+.pytest_cache

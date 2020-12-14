@@ -13,7 +13,7 @@ project for pytorch implementation example of image classification
 * wandb
 * pre-commit (for pre-commit formatting, type check and testing)
 
-Please run `pip install -r requirements.txt` to install the necessary packages.
+Please run `poetry install` to install the necessary packages.
 
 ## Dataset
 
@@ -24,14 +24,17 @@ Download the dataset from [HERE](https://www.kaggle.com/alxmamaev/flowers-recogn
 
 ```Directory Structure
 .
-├── FOR_AOLAB_MEMBERS.md
+├── docs/
 ├── LICENSE
 ├── README.md
 ├── dataset/
 │   └── flowers/
-├── requirements.txt
+├── pyproject.toml
 ├── .gitignore
-├── .pre-commit-config
+├── .gitattributes
+├── .pre-commit-config.yaml
+├── poetry.lock
+├── tests/
 └── src/
     ├── csv
     ├── libs/
@@ -92,7 +95,7 @@ sh scripts/experiment.sh
 * [x] `mypy` (pre-commit check)
 * [x] formatting (pre-commit `isort`, `black` and `flake8`)
 * [x] calculate cyclomatic complexity / expression complexity / cognitive complexity (`flake8` extension)
-* [ ] CI for testing using GitHub Actions
+* [x] CI for testing using GitHub Actions
 
 ## License
 
