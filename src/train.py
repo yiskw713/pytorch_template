@@ -1,5 +1,6 @@
 import argparse
 import os
+import random
 import time
 
 import torch
@@ -46,12 +47,25 @@ def get_arguments() -> argparse.Namespace:
         action="store_true",
         help="Add --use_wandb option if you want to use wandb.",
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="random seed",
+    )
 
     return parser.parse_args()
 
 
 def main() -> None:
     args = get_arguments()
+
+    # set seed
+    seed = 0
+    random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
 
     # configuration
     config = get_config(args.config)
