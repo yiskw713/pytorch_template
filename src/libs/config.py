@@ -7,7 +7,7 @@ import yaml
 __all__ = ["get_config"]
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Config:
     model: str
     pretrained: bool = True
