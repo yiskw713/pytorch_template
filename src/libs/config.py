@@ -9,6 +9,8 @@ __all__ = ["get_config"]
 
 @dataclasses.dataclass(frozen=True)
 class Config:
+    """Experimental configuration class."""
+
     model: str
     pretrained: bool = True
 
@@ -29,7 +31,7 @@ class Config:
     val_csv: str = "./csv/val.csv"
     test_csv: str = "./csv/test.csv"
 
-    topk: Tuple[int, ...] = (1, 3, 5)
+    topk: Tuple[int, ...] = (1, 3)
 
     def __post_init__(self) -> None:
         self._type_check()
