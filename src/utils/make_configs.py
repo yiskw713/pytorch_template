@@ -53,6 +53,16 @@ def get_arguments() -> argparse.Namespace:
                 nargs="*",
                 required=True,
             )
+        elif hasattr(field.type, "__origin__"):
+            # the field type is Tuple or not.
+            # https://github.com/zalando/connexion/issues/739
+            parser.add_argument(
+                f"--{field.name}",
+                type=field.type.__args__[0],
+                action="append",
+                nargs="+",
+                default=[list(field.default)],
+            )
         else:
             # default value is provided in config dataclass.
             parser.add_argument(
@@ -63,6 +73,15 @@ def get_arguments() -> argparse.Namespace:
             )
 
     return parser.parse_args()
+
+
+def convert_tuple2list(_dict: Dict[str, Any]) -> Dict[str, Any]:
+    # cannot use tuple in yaml file for safe loading.
+    for key, val in _dict.items():
+        if isinstance(val, tuple):
+            _dict[key] = tuple(val)
+
+    return _dict
 
 
 def parse_params(
@@ -83,6 +102,46 @@ def parse_params(
     return base_config, variable_keys, variable_values
 
 
+def get_n_options(
+    variable_keys: List[str], variable_values: List[List[Any]]
+) -> Dict[str, int]:
+    cnt = {}
+    for k, v in zip(variable_keys, variable_values):
+        cnt[k] = len(v)
+
+    return cnt
+
+
+def generate_and_save_config(
+    base_config: Dict[str, Any],
+    variable_keys: List[str],
+    values: Tuple[Any],
+    root_dir: str,
+    n_options_dict: Dict[str, int],
+) -> None:
+    config = base_config.copy()
+    param_list = []
+    for k, v in zip(variable_keys, values):
+        config[k] = v
+
+        if n_options_dict[k] == 1:
+            continue
+        else:
+            param_list.append(f"{k}-{v}")
+
+    dir_name = "_".join(param_list)
+    dir_path = os.path.join(root_dir, dir_name)
+
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
+    config_path = os.path.join(dir_path, "config.yaml")
+
+    # save configuration file as yaml
+    with open(config_path, "w") as f:
+        yaml.dump(config, f, default_flow_style=False)
+
+
 def main() -> None:
     args = get_arguments()
 
@@ -92,28 +151,20 @@ def main() -> None:
 
     base_config, variable_keys, variable_values = parse_params(args_dict)
 
+    # base_config may contain tuple object and they should be converted.
+    base_config = convert_tuple2list(base_config)
+
     # get direct product
     product = itertools.product(*variable_values)
 
+    # get the number of options for each key.
+    n_options_dict = get_n_options(variable_keys, variable_values)
+
     # make a directory and save configuration file there.
     for values in product:
-        config = base_config.copy()
-        param_list = []
-        for k, v in zip(variable_keys, values):
-            config[k] = v
-            param_list.append(f"{k}-{v}")
-
-        dir_name = "_".join(param_list)
-        dir_path = os.path.join(args.root_dir, dir_name)
-
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-
-        config_path = os.path.join(dir_path, "config.yaml")
-
-        # save configuration file as yaml
-        with open(config_path, "w") as f:
-            yaml.dump(config, f, default_flow_style=False)
+        generate_and_save_config(
+            base_config, variable_keys, values, args.root_dir, n_options_dict
+        )
 
     print("Finished making configuration files.")
 

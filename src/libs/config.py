@@ -1,4 +1,5 @@
 import dataclasses
+import os
 import pprint
 from typing import Any, Dict, Tuple
 
@@ -9,6 +10,8 @@ __all__ = ["get_config"]
 
 @dataclasses.dataclass(frozen=True)
 class Config:
+    """Experimental configuration class."""
+
     model: str
     pretrained: bool = True
 
@@ -29,13 +32,27 @@ class Config:
     val_csv: str = "./csv/val.csv"
     test_csv: str = "./csv/test.csv"
 
-    topk: Tuple[int, ...] = (1, 3, 5)
+    topk: Tuple[int, ...] = (1, 3)
 
     def __post_init__(self) -> None:
         self._type_check()
+        self._value_check()
 
         print("-" * 10, "Experiment Configuration", "-" * 10)
         pprint.pprint(dataclasses.asdict(self), width=1)
+
+    def _value_check(self) -> None:
+        if not os.path.exists(self.train_csv):
+            raise FileNotFoundError("train_csv is not found")
+
+        if not os.path.exists(self.val_csv):
+            raise FileNotFoundError("val_csv is not found")
+
+        if not os.path.exists(self.test_csv):
+            raise FileNotFoundError("test_csv is not found")
+
+        if self.max_epoch <= 0:
+            raise ValueError("max_epoch must be positive.")
 
     def _type_check(self) -> None:
         """Reference:
