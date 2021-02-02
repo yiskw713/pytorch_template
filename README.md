@@ -1,4 +1,4 @@
-# Image Classification Template
+# Pytorch Template
 
 ![status-badge](https://github.com/yiskw713/pytorch_template/workflows/mypy_pytest/badge.svg)
 
@@ -10,8 +10,11 @@ project for pytorch implementation example of image classification
 * pytorch >= 1.0
 * pyyaml
 * scikit-learn
-* wandb
-* pre-commit (for pre-commit formatting, type check and testing)
+* [wandb](https://wandb.ai/)
+* [pre-commit](https://pre-commit.com/) (for pre-commit formatting, type check and testing)
+* [hiddenlayer](https://github.com/waleedka/hiddenlayer)
+* [graphviz](https://graphviz.gitlab.io/download/)
+* [python wrapper for graphviz](https://github.com/xflr6/graphviz)
 
 Please run `poetry install` to install the necessary packages.
 
@@ -78,6 +81,7 @@ Download the dataset from [HERE](https://www.kaggle.com/alxmamaev/flowers-recogn
 * running all the experiments by running shell scripts (`scripts/experiment.sh`)
 * support type annotation (`typing`)
 * code formatting with `black`, `isort` and `flake8`
+* visualize model for debug using [`hiddenlayer`](https://github.com/waleedka/hiddenlayer) (`src/utils/visualize_model.py`)
 
 ## Experiment
 
@@ -86,6 +90,25 @@ You can set configurations and run all the experiments by the below command.
 
 ```shell
 sh scripts/experiment.sh
+```
+
+### training
+
+```shell
+python train.py ./result/xxxx/config.yaml
+```
+
+### evaluation
+
+```shell
+python evaluate.py ./result/xxxx/config.yaml validation
+python evaluate.py ./result/xxxx/config.yaml test
+```
+
+### Model visualization
+
+```shell
+python utils/visualize_model.py MODEL_NAME
 ```
 
 ## Formatting
@@ -106,7 +129,7 @@ sh scripts/experiment.sh
 * [x] formatting (pre-commit `isort`, `black` and `flake8`)
 * [x] calculate cyclomatic complexity / expression complexity / cognitive complexity (`flake8` extension)
 * [x] CI for testing using GitHub Actions
-* [ ] visualization of models
+* [x] visualization of models
 
 ## License
 
