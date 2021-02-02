@@ -18,6 +18,8 @@ scikit-learn = "^0.23.2"
 torch = "^1.7.0"
 torchvision = "^0.8.1"
 wandb = "^0.10.12"
+hiddenlayer = "^0.3"
+graphviz = "^0.16"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
