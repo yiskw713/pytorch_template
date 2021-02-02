@@ -6,9 +6,15 @@ import torch
 def calc_accuracy(
     output: torch.Tensor, target: torch.Tensor, topk: Tuple[int] = (1,)
 ) -> List[float]:
-    """Computes the accuracy over the k top predictions for the specifiedvalues
-    of k."""
+    """Computes the accuracy over the k top predictions.
 
+    Args:
+        output: (N, C). model output.
+        target: (N, C). ground truth.
+        topk: if you set (1, 5), top 1 and top 5 accuracy are calcuated.
+    Return:
+        res: List of calculated top k accuracy
+    """
     with torch.no_grad():
         maxk = max(topk)
         batch_size = target.size(0)
