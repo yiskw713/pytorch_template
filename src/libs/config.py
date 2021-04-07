@@ -41,8 +41,9 @@ class Config:
         self._type_check()
         self._value_check()
 
-        logger.info("-" * 10, "Experiment Configuration", "-" * 10)
-        logger.info(pformat(dataclasses.asdict(self), width=1))
+        logger.info(
+            "Experiment Configuration\n" + pformat(dataclasses.asdict(self), width=1)
+        )
 
     def _value_check(self) -> None:
         if not os.path.exists(self.train_csv):

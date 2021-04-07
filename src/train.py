@@ -89,7 +89,7 @@ def main() -> None:
     config = get_config(args.config)
 
     # cpu or cuda
-    device = get_device(allow_only_gpu=True)
+    device = get_device(allow_only_gpu=False)
 
     # Dataloader
     train_transform = Compose(
@@ -162,7 +162,7 @@ def main() -> None:
         wandb.watch(model, log="all")
 
     # train and validate model
-    logger.info("---------- Start training ----------")
+    logger.info("Start training.")
 
     for epoch in range(begin_epoch, config.max_epoch):
         # training

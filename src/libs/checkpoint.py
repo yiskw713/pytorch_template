@@ -25,7 +25,7 @@ def save_checkpoint(
     }
 
     torch.save(save_states, os.path.join(result_path, "checkpoint.pth"))
-    logger.info("successfully saved the ckeckpoint.")
+    logger.debug("successfully saved the ckeckpoint.")
 
 
 def resume(
