@@ -1,5 +1,7 @@
+from logging import DEBUG, INFO
+
 import pytest
-from _pytest.capture import CaptureFixture
+from _pytest.logging import LogCaptureFixture
 
 from src.libs.meter import AverageMeter, ProgressMeter
 
@@ -16,11 +18,20 @@ def test_average_meter(average_meter: AverageMeter) -> None:
     assert average_meter.get_average() == 10.0
 
 
-def test_progress_meter(average_meter: AverageMeter, capfd: CaptureFixture) -> None:
+def test_progress_meter(average_meter: AverageMeter, caplog: LogCaptureFixture) -> None:
+    caplog.set_level(DEBUG)
+
     meter = ProgressMeter(2, [average_meter])
     meter.display(2)
 
-    # test printed string
-    out, err = capfd.readouterr()
-    assert out == "[2/2]\tacc 12.0 (avg. 10.0)\n"
-    assert err == ""
+    # test logs
+    assert (
+        "src.libs.meter",
+        DEBUG,
+        "Progress meter is set up.",
+    ) in caplog.record_tuples
+    assert (
+        "src.libs.meter",
+        INFO,
+        "[2/2]\tacc 12.0 (avg. 10.0)",
+    ) in caplog.record_tuples

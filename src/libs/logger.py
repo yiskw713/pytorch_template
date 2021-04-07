@@ -29,9 +29,11 @@ class TrainLogger(object):
     def _load_log(self) -> pd.DataFrame:
         try:
             df = pd.read_csv(self.log_path)
+            logger.info("successfully loaded log csv file.")
             return df
-        except FileNotFoundError("Log file not found.") as e:
-            logger.exception(f"{e}")
+        except FileNotFoundError as err:
+            logger.exception(f"{err}")
+            raise err
 
     def _save_log(self) -> None:
         self.df.to_csv(self.log_path, index=False)

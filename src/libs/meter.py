@@ -11,7 +11,7 @@ class AverageMeter(object):
         self.name = name
         self.fmt = fmt
         self._reset()
-        logger.debug("train logger is set up.")
+        logger.debug("Average meter is set up.")
 
     def _reset(self) -> None:
         self.val = 0.0

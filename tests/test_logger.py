@@ -1,8 +1,9 @@
 import os
+from logging import DEBUG, INFO
 from typing import Tuple, Union
 
 import pytest
-from _pytest.capture import CaptureFixture
+from _pytest.logging import LogCaptureFixture
 
 from src.libs.logger import TrainLogger
 
@@ -24,14 +25,28 @@ def epoch_result() -> Tuple[Union[int, float], ...]:
     return results
 
 
-def test_update(epoch_result: Tuple[int], capfd: CaptureFixture):
+def test_update(epoch_result: Tuple[int], caplog: LogCaptureFixture):
+    caplog.set_level(DEBUG)
+
     log_path = "./tests/tmp/log.csv"
     logger = TrainLogger(log_path, False)
     logger.update(*epoch_result)
 
-    # test printed string
-    _, err = capfd.readouterr()
-    assert err == ""
+    # test logs
+    assert (
+        "src.libs.logger",
+        DEBUG,
+        "training logs are saved.",
+    ) in caplog.record_tuples
+
+    assert (
+        "src.libs.logger",
+        INFO,
+        f"epoch: {epoch_result[0]}\tepoch time[sec]: {epoch_result[2] + epoch_result[6]}\t"
+        f"lr: {epoch_result[1]}\t"
+        f"train loss: {epoch_result[3]:.4f}\tval loss: {epoch_result[7]:.4f}\t"
+        f"val_acc1: {epoch_result[8]:.5f}\tval_f1s: {epoch_result[9]:.5f}",
+    ) in caplog.record_tuples
 
     assert os.path.exists(log_path)
     assert len(logger.df) == 1
@@ -40,7 +55,9 @@ def test_update(epoch_result: Tuple[int], capfd: CaptureFixture):
     assert len(logger.df) == 2
 
 
-def test_init_load():
+def test_init_load(caplog: LogCaptureFixture):
+    caplog.set_level(DEBUG)
+
     log_path = "./tests/tmp/no_exist_log.csv"
 
     with pytest.raises(FileNotFoundError):
@@ -48,6 +65,13 @@ def test_init_load():
 
     log_path = "./tests/tmp/log.csv"
     logger = TrainLogger(log_path, True)
+
+    # test logs
+    assert (
+        "src.libs.logger",
+        INFO,
+        "successfully loaded log csv file.",
+    ) in caplog.record_tuples
 
     assert len(logger.df) == 2
     assert logger.df.iloc[0]["epoch"] == 0
