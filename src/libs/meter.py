@@ -1,4 +1,7 @@
+from logging import getLogger
 from typing import List
+
+logger = getLogger(__name__)
 
 
 class AverageMeter(object):
@@ -8,6 +11,7 @@ class AverageMeter(object):
         self.name = name
         self.fmt = fmt
         self._reset()
+        logger.debug("Average meter is set up.")
 
     def _reset(self) -> None:
         self.val = 0.0
@@ -38,12 +42,14 @@ class ProgressMeter(object):
         self.meters = meters
         self.prefix = prefix
 
+        logger.debug("Progress meter is set up.")
+
     def display(self, batch: int) -> None:
         entries = [self.prefix + self.batch_fmtstr.format(batch)]
 
         # show current values and average values
         entries += [str(meter) for meter in self.meters]
-        print("\t".join(entries))
+        logger.info("\t".join(entries))
 
     def _get_batch_fmtstr(self, num_batches: int) -> str:
         num_digits = len(str(num_batches // 1))

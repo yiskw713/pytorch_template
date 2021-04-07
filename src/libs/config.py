@@ -1,11 +1,14 @@
 import dataclasses
 import os
-import pprint
+from logging import getLogger
+from pprint import pformat
 from typing import Any, Dict, Tuple
 
 import yaml
 
 __all__ = ["get_config"]
+
+logger = getLogger(__name__)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -38,21 +41,30 @@ class Config:
         self._type_check()
         self._value_check()
 
-        print("-" * 10, "Experiment Configuration", "-" * 10)
-        pprint.pprint(dataclasses.asdict(self), width=1)
+        logger.info(
+            "Experiment Configuration\n" + pformat(dataclasses.asdict(self), width=1)
+        )
 
     def _value_check(self) -> None:
         if not os.path.exists(self.train_csv):
-            raise FileNotFoundError("train_csv is not found")
+            message = "train_csv is not found."
+            logger.error(message)
+            raise FileNotFoundError(message)
 
         if not os.path.exists(self.val_csv):
-            raise FileNotFoundError("val_csv is not found")
+            message = "val_csv is not found"
+            logger.error(message)
+            raise FileNotFoundError(logger)
 
         if not os.path.exists(self.test_csv):
-            raise FileNotFoundError("test_csv is not found")
+            message = "test_csv is not found"
+            logger.error(message)
+            raise FileNotFoundError(message)
 
         if self.max_epoch <= 0:
-            raise ValueError("max_epoch must be positive.")
+            message = "max_epoch must be positive."
+            logger.error(message)
+            raise ValueError(message)
 
     def _type_check(self) -> None:
         """Reference:
@@ -81,18 +93,20 @@ class Config:
             # bool is the subclass of int,
             # so need to use `type() is` instead of `isinstance`
             if type(_dict[field]) is not field_type:
-                raise TypeError(
-                    f"The type of '{field}' field is supposed to be {field_type}."
-                )
+                message = f"The type of '{field}' field is supposed to be {field_type}."
+                logger.error(message)
+                raise TypeError(message)
 
     def _type_check_element(
         self, field: str, vals: Tuple[Any], element_type: type
     ) -> None:
         for val in vals:
             if type(val) is not element_type:
-                raise TypeError(
+                message = (
                     f"The element of '{field}' field is supposed to be {element_type}."
                 )
+                logger.error(message)
+                raise TypeError(message)
 
 
 def convert_list2tuple(_dict: Dict[str, Any]) -> Dict[str, Any]:
@@ -101,6 +115,7 @@ def convert_list2tuple(_dict: Dict[str, Any]) -> Dict[str, Any]:
         if isinstance(val, list):
             _dict[key] = tuple(val)
 
+    logger.debug("converted list to tuple in dictionary.")
     return _dict
 
 
@@ -110,4 +125,6 @@ def get_config(config_path: str) -> Config:
 
     config_dict = convert_list2tuple(config_dict)
     config = Config(**config_dict)
+
+    logger.info("successfully loaded configuration.")
     return config

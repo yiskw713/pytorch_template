@@ -1,6 +1,8 @@
-import os
+from logging import getLogger
 
 import pandas as pd
+
+logger = getLogger(__name__)
 
 
 class TrainLogger(object):
@@ -20,19 +22,22 @@ class TrainLogger(object):
         ]
 
         if resume:
-            self.df = self._load_log(log_path)
+            self.df = self._load_log()
         else:
             self.df = pd.DataFrame(columns=self.columns)
 
-    def _load_log(self, log_path: str) -> pd.DataFrame:
-        if os.path.exists(log_path):
-            df = pd.read_csv(log_path)
+    def _load_log(self) -> pd.DataFrame:
+        try:
+            df = pd.read_csv(self.log_path)
+            logger.info("successfully loaded log csv file.")
             return df
-        else:
-            raise FileNotFoundError("Log file not found.")
+        except FileNotFoundError as err:
+            logger.exception(f"{err}")
+            raise err
 
     def _save_log(self) -> None:
         self.df.to_csv(self.log_path, index=False)
+        logger.debug("training logs are saved.")
 
     def update(
         self,
@@ -66,16 +71,8 @@ class TrainLogger(object):
         self.df = self.df.append(tmp, ignore_index=True)
         self._save_log()
 
-        print(
-            """epoch: {}\tepoch time[sec]: {}\tlr: {}\ttrain loss: {:.4f}\t\
-            val loss: {:.4f} val_acc1: {:.5f}\tval_f1s: {:.5f}
-            """.format(
-                epoch,
-                train_time + val_time,
-                lr,
-                train_loss,
-                val_loss,
-                val_acc1,
-                val_f1s,
-            )
+        logger.info(
+            f"epoch: {epoch}\tepoch time[sec]: {train_time + val_time}\tlr: {lr}\t"
+            f"train loss: {train_loss:.4f}\tval loss: {val_loss:.4f}\t"
+            f"val_acc1: {val_acc1:.5f}\tval_f1s: {val_f1s:.5f}"
         )
