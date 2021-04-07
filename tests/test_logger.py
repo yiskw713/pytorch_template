@@ -25,7 +25,7 @@ def epoch_result() -> Tuple[Union[int, float], ...]:
     return results
 
 
-def test_update(epoch_result: Tuple[int], caplog: LogCaptureFixture):
+def test_update(epoch_result: Tuple[Union[int, float], ...], caplog: LogCaptureFixture):
     caplog.set_level(DEBUG)
 
     log_path = "./tests/tmp/log.csv"
@@ -42,7 +42,8 @@ def test_update(epoch_result: Tuple[int], caplog: LogCaptureFixture):
     assert (
         "src.libs.logger",
         INFO,
-        f"epoch: {epoch_result[0]}\tepoch time[sec]: {epoch_result[2] + epoch_result[6]}\t"
+        f"epoch: {epoch_result[0]}\t"
+        f"epoch time[sec]: {epoch_result[2] + epoch_result[6]}\t"
         f"lr: {epoch_result[1]}\t"
         f"train loss: {epoch_result[3]:.4f}\tval loss: {epoch_result[7]:.4f}\t"
         f"val_acc1: {epoch_result[8]:.5f}\tval_f1s: {epoch_result[9]:.5f}",
