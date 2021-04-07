@@ -1,5 +1,9 @@
+from logging import getLogger
+
 import pandas as pd
 import torch
+
+logger = getLogger(__name__)
 
 
 def get_class_num(train_csv_file: str) -> torch.Tensor:
@@ -22,6 +26,8 @@ def get_class_num(train_csv_file: str) -> torch.Tensor:
         class_num.append(val)
     class_num = torch.tensor(class_num)
 
+    logger.debug(f"the number of samples per class: {class_num}")
+
     return class_num
 
 
@@ -40,5 +46,7 @@ def get_class_weight(train_csv_file: str) -> torch.Tensor:
     frequency = class_num.float() / total
     median = torch.median(frequency)
     class_weight = median / frequency
+
+    logger.debug(f"class weight: {class_num}")
 
     return class_weight

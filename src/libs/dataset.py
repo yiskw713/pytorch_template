@@ -1,4 +1,4 @@
-import os
+from logging import getLogger
 from typing import Any, Dict, Optional
 
 import pandas as pd
@@ -8,6 +8,8 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 __all__ = ["get_dataloader"]
+
+logger = getLogger(__name__)
 
 
 def get_dataloader(
@@ -42,13 +44,17 @@ class FlowersDataset(Dataset):
         self, csv_file: str, transform: Optional[transforms.Compose] = None
     ) -> None:
         super().__init__()
-        assert os.path.exists(csv_file)
 
-        csv_path = os.path.join(csv_file)
+        try:
+            self.df = pd.read_csv(csv_file)
+        except FileNotFoundError("csv file not found.") as e:
+            logger.exception(f"{e}")
 
-        self.df = pd.read_csv(csv_path)
         self.n_classes = self.df["class_id"].nunique()
         self.transform = transform
+
+        logger.info(f"the number of classes: {self.n_classes}")
+        logger.info(f"the number of samples: {len(self.df)}")
 
     def __len__(self) -> int:
         return len(self.df)

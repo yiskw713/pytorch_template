@@ -1,6 +1,8 @@
-import os
+from logging import getLogger
 
 import pandas as pd
+
+logger = getLogger(__name__)
 
 
 class TrainLogger(object):
@@ -20,19 +22,20 @@ class TrainLogger(object):
         ]
 
         if resume:
-            self.df = self._load_log(log_path)
+            self.df = self._load_log()
         else:
             self.df = pd.DataFrame(columns=self.columns)
 
-    def _load_log(self, log_path: str) -> pd.DataFrame:
-        if os.path.exists(log_path):
-            df = pd.read_csv(log_path)
+    def _load_log(self) -> pd.DataFrame:
+        try:
+            df = pd.read_csv(self.log_path)
             return df
-        else:
-            raise FileNotFoundError("Log file not found.")
+        except FileNotFoundError("Log file not found.") as e:
+            logger.exception(f"{e}")
 
     def _save_log(self) -> None:
         self.df.to_csv(self.log_path, index=False)
+        logger.info("training logs are saved.")
 
     def update(
         self,
@@ -66,7 +69,7 @@ class TrainLogger(object):
         self.df = self.df.append(tmp, ignore_index=True)
         self._save_log()
 
-        print(
+        logger.info(
             """epoch: {}\tepoch time[sec]: {}\tlr: {}\ttrain loss: {:.4f}\t\
             val loss: {:.4f} val_acc1: {:.5f}\tval_f1s: {:.5f}
             """.format(

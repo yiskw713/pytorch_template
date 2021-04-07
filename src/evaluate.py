@@ -1,6 +1,8 @@
 import argparse
 import csv
+import datetime
 import os
+from logging import DEBUG, INFO, basicConfig, getLogger
 
 import pandas as pd
 import torch
@@ -14,6 +16,8 @@ from libs.helper import evaluate
 from libs.loss_fn import get_criterion
 from libs.mean_std import get_mean, get_std
 from libs.models import get_model
+
+logger = getLogger(__name__)
 
 
 def get_arguments() -> argparse.Namespace:
@@ -35,6 +39,11 @@ def get_arguments() -> argparse.Namespace:
         help="""path to the trained model. If you do not specify, the trained model,
             'best_acc1_model.prm' in result directory will be used.""",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Add --debug option if you want to see debug-level logs.",
+    )
 
     return parser.parse_args()
 
@@ -44,15 +53,28 @@ def main() -> None:
 
     # configuration
     config = get_config(args.config)
-
     result_path = os.path.dirname(args.config)
+
+    if args.mode not in ["validation", "test"]:
+        message = "args.mode is invalid. ['validation', 'test']"
+        logger.error(message)
+        raise ValueError(message)
+
+    # setting logger configuration
+    logname = os.path.join(
+        result_path, f"{datetime.datetime.now():%Y-%m-%d}_{args.mode}.log"
+    )
+    basicConfig(
+        level=DEBUG if args.debug else INFO,
+        format="[%(asctime)s] %(name)s %(levelname)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename=logname,
+    )
 
     # cpu or cuda
     device = get_device(allow_only_gpu=True)
 
     # Dataloader
-    assert args.mode in ["validation", "test"]
-
     transform = Compose([ToTensor(), Normalize(mean=get_mean(), std=get_std())])
 
     loader = get_dataloader(
@@ -84,12 +106,12 @@ def main() -> None:
     criterion = get_criterion(config.use_class_weight, config.train_csv, device)
 
     # train and validate model
-    print(f"---------- Start evaluation for {args.mode} data ----------")
+    logger.info(f"---------- Start evaluation for {args.mode} data ----------")
 
     # evaluation
     loss, acc1, f1s, c_matrix = evaluate(loader, model, criterion, device)
 
-    print("loss: {:.5f}\tacc1: {:.2f}\tF1 Score: {:.2f}".format(loss, acc1, f1s))
+    logger.info("loss: {:.5f}\tacc1: {:.2f}\tF1 Score: {:.2f}".format(loss, acc1, f1s))
 
     df = pd.DataFrame(
         {"loss": [loss], "acc@1": [acc1], "f1score": [f1s]},
@@ -105,7 +127,7 @@ def main() -> None:
         writer = csv.writer(file, lineterminator="\n")
         writer.writerows(c_matrix)
 
-    print("Done.")
+    logger.info("Done.")
 
 
 if __name__ == "__main__":

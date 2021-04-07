@@ -1,7 +1,8 @@
 import argparse
+import datetime
 import os
-import random
 import time
+from logging import DEBUG, INFO, basicConfig, getLogger
 
 import torch
 import torch.optim as optim
@@ -25,6 +26,9 @@ from libs.logger import TrainLogger
 from libs.loss_fn import get_criterion
 from libs.mean_std import get_mean, get_std
 from libs.models import get_model
+from libs.seed import set_seed
+
+logger = getLogger(__name__)
 
 
 def get_arguments() -> argparse.Namespace:
@@ -48,6 +52,11 @@ def get_arguments() -> argparse.Namespace:
         help="Add --use_wandb option if you want to use wandb.",
     )
     parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Add --debug option if you want to see debug-level logs.",
+    )
+    parser.add_argument(
         "--seed",
         type=int,
         default=0,
@@ -60,19 +69,24 @@ def get_arguments() -> argparse.Namespace:
 def main() -> None:
     args = get_arguments()
 
-    # set seed
-    seed = 0
-    random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-
-    # configuration
-    config = get_config(args.config)
-
     # save log files in the directory which contains config file.
     result_path = os.path.dirname(args.config)
     experiment_name = os.path.basename(result_path)
+
+    # setting logger configuration
+    logname = os.path.join(result_path, f"{datetime.datetime.now():%Y-%m-%d}_train.log")
+    basicConfig(
+        level=DEBUG if args.debug else INFO,
+        format="[%(asctime)s] %(name)s %(levelname)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename=logname,
+    )
+
+    # fix seed
+    set_seed()
+
+    # configuration
+    config = get_config(args.config)
 
     # cpu or cuda
     device = get_device(allow_only_gpu=True)
@@ -130,7 +144,7 @@ def main() -> None:
         begin_epoch, model, optimizer, best_loss = resume(resume_path, model, optimizer)
 
     log_path = os.path.join(result_path, "log.csv")
-    logger = TrainLogger(log_path, resume=args.resume)
+    train_logger = TrainLogger(log_path, resume=args.resume)
 
     # criterion for loss
     criterion = get_criterion(config.use_class_weight, config.train_csv, device)
@@ -148,7 +162,7 @@ def main() -> None:
         wandb.watch(model, log="all")
 
     # train and validate model
-    print("---------- Start training ----------")
+    logger.info("---------- Start training ----------")
 
     for epoch in range(begin_epoch, config.max_epoch):
         # training
@@ -177,7 +191,7 @@ def main() -> None:
         save_checkpoint(result_path, epoch, model, optimizer, best_loss)
 
         # write logs to dataframe and csv file
-        logger.update(
+        train_logger.update(
             epoch,
             optimizer.param_groups[0]["lr"],
             train_time,
@@ -213,7 +227,7 @@ def main() -> None:
     # delete checkpoint
     os.remove(os.path.join(result_path, "checkpoint.pth"))
 
-    print("Done")
+    logger.info("Done")
 
 
 if __name__ == "__main__":

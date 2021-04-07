@@ -1,4 +1,5 @@
 import os
+from logging import getLogger
 from typing import Optional
 
 import torch.nn as nn
@@ -6,6 +7,7 @@ import torch.nn as nn
 from .class_weight import get_class_weight
 
 __all__ = ["get_criterion"]
+logger = getLogger(__name__)
 
 
 def get_criterion(
@@ -16,10 +18,14 @@ def get_criterion(
 
     if use_class_weight:
         if train_csv_file is None or not os.path.exists(train_csv_file):
-            raise FileNotFoundError("the path to a csv file for training is invalid.")
+            message = "the path to a csv file for training is invalid."
+            logger.error(message)
+            raise FileNotFoundError(message)
 
         if device is None:
-            raise ValueError("you should specify a device when you use class weight.")
+            message = "you should specify a device when you use class weight."
+            logger.error(message)
+            raise ValueError(message)
 
         class_weight = get_class_weight(train_csv_file).to(device)
         criterion = nn.CrossEntropyLoss(weight=class_weight)

@@ -1,4 +1,5 @@
 import time
+from logging import getLogger
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
@@ -13,6 +14,8 @@ from .metric import calc_accuracy
 
 __all__ = ["train", "evaluate"]
 
+logger = getLogger(__name__)
+
 
 def do_one_iteration(
     sample: Dict[str, Any],
@@ -24,10 +27,14 @@ def do_one_iteration(
 ) -> Tuple[int, float, float, np.ndarray, np.ndarray]:
 
     if iter_type not in ["train", "evaluate"]:
-        raise ValueError("iter_type must be either 'train' or 'evaluate'.")
+        message = "iter_type must be either 'train' or 'evaluate'."
+        logger.error(message)
+        raise ValueError(message)
 
     if iter_type == "train" and optimizer is None:
-        raise ValueError("optimizer must be set during training.")
+        message = "optimizer must be set during training."
+        logger.error(message)
+        raise ValueError(message)
 
     x = sample["img"].to(device)
     t = sample["class_id"].to(device)

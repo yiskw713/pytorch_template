@@ -1,4 +1,8 @@
+from logging import getLogger
+
 import torch
+
+logger = getLogger(__name__)
 
 
 def get_device(allow_only_gpu: bool = True) -> str:
@@ -7,16 +11,17 @@ def get_device(allow_only_gpu: bool = True) -> str:
         torch.backends.cudnn.benchmark = True
     else:
         if allow_only_gpu:
-            raise ValueError(
-                """You can use only cpu while you don't allow the use of cpu alone during training.
-                """
+            message = (
+                "You can use only cpu while you don't"
+                "allow the use of cpu alone during training."
             )
+            logger.error(message)
+            raise ValueError(message)
 
         device = "cpu"
-        print(
-            """CPU will be used for training. It is better to use GPUs instead
-            because training CNN is computationally expensive.
-            """
+        logger.warning(
+            "CPU will be used for training. It is better to use GPUs instead"
+            "because training CNN is computationally expensive."
         )
 
     return device
