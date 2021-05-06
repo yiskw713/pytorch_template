@@ -1,10 +1,11 @@
 import dataclasses
-import os
 from logging import getLogger
 from pprint import pformat
 from typing import Any, Dict, Tuple
 
 import yaml
+
+from .dataset_csv import DATASET_CSVS
 
 __all__ = ["get_config"]
 
@@ -15,7 +16,7 @@ logger = getLogger(__name__)
 class Config:
     """Experimental configuration class."""
 
-    model: str
+    model: str = "resnet18"
     pretrained: bool = True
 
     # whether you use class weight to calculate cross entropy or not
@@ -31,9 +32,7 @@ class Config:
 
     learning_rate: float = 0.003
 
-    train_csv: str = "./csv/train.csv"
-    val_csv: str = "./csv/val.csv"
-    test_csv: str = "./csv/test.csv"
+    dataset_name: str = "flower"
 
     topk: Tuple[int, ...] = (1, 3)
 
@@ -46,20 +45,12 @@ class Config:
         )
 
     def _value_check(self) -> None:
-        if not os.path.exists(self.train_csv):
-            message = "train_csv is not found."
+        if self.dataset_name not in DATASET_CSVS:
+            message = (
+                f"dataset_name should be selected from {list(DATASET_CSVS.keys())}."
+            )
             logger.error(message)
-            raise FileNotFoundError(message)
-
-        if not os.path.exists(self.val_csv):
-            message = "val_csv is not found"
-            logger.error(message)
-            raise FileNotFoundError(logger)
-
-        if not os.path.exists(self.test_csv):
-            message = "test_csv is not found"
-            logger.error(message)
-            raise FileNotFoundError(message)
+            raise ValueError(message)
 
         if self.max_epoch <= 0:
             message = "max_epoch must be positive."

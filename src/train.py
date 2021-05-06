@@ -105,7 +105,8 @@ def main() -> None:
     val_transform = Compose([ToTensor(), Normalize(mean=get_mean(), std=get_std())])
 
     train_loader = get_dataloader(
-        config.train_csv,
+        config.dataset_name,
+        "train",
         batch_size=config.batch_size,
         shuffle=True,
         num_workers=config.num_workers,
@@ -115,7 +116,8 @@ def main() -> None:
     )
 
     val_loader = get_dataloader(
-        config.val_csv,
+        config.dataset_name,
+        "val",
         batch_size=1,
         shuffle=False,
         num_workers=config.num_workers,
@@ -147,7 +149,7 @@ def main() -> None:
     train_logger = TrainLogger(log_path, resume=args.resume)
 
     # criterion for loss
-    criterion = get_criterion(config.use_class_weight, config.train_csv, device)
+    criterion = get_criterion(config.use_class_weight, config.dataset_name, device)
 
     # Weights and biases
     if args.use_wandb:

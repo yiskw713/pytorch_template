@@ -7,13 +7,16 @@ from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
+from .dataset_csv import DATASET_CSVS
+
 __all__ = ["get_dataloader"]
 
 logger = getLogger(__name__)
 
 
 def get_dataloader(
-    csv_file: str,
+    dataset_name: str,
+    split: str,
     batch_size: int,
     shuffle: bool,
     num_workers: int,
@@ -21,12 +24,21 @@ def get_dataloader(
     drop_last: bool = False,
     transform: Optional[transforms.Compose] = None,
 ) -> DataLoader:
+    if dataset_name not in DATASET_CSVS:
+        message = f"dataset_name should be selected from {list(DATASET_CSVS.keys())}."
+        logger.error(message)
+        raise ValueError(message)
 
-    data = FlowersDataset(
-        csv_file,
-        transform=transform,
-    )
+    if split not in ["train", "val", "test"]:
+        message = "split should be selected from ['train', 'val', 'test']."
+        logger.error(message)
+        raise ValueError(message)
 
+    logger.info(f"Dataset: {dataset_name}\tSplit: {split}\tBatch size: {batch_size}.")
+
+    csv_file = getattr(DATASET_CSVS[dataset_name], split)
+
+    data = FlowersDataset(csv_file, transform=transform)
     dataloader = DataLoader(
         data,
         batch_size=batch_size,

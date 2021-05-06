@@ -78,7 +78,8 @@ def main() -> None:
     transform = Compose([ToTensor(), Normalize(mean=get_mean(), std=get_std())])
 
     loader = get_dataloader(
-        config.val_csv if args.mode == "validation" else config.test_csv,
+        config.dataset_name,
+        "val" if args.mode == "validation" else "test",
         batch_size=1,
         shuffle=False,
         num_workers=config.num_workers,
@@ -103,7 +104,7 @@ def main() -> None:
     model.load_state_dict(state_dict)
 
     # criterion for loss
-    criterion = get_criterion(config.use_class_weight, config.train_csv, device)
+    criterion = get_criterion(config.use_class_weight, config.dataset_name, device)
 
     # train and validate model
     logger.info(f"---------- Start evaluation for {args.mode} data ----------")

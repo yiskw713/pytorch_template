@@ -1,9 +1,9 @@
-import os
 from logging import getLogger
 from typing import Optional
 
 import torch.nn as nn
 
+from ..dataset_csv import DATASET_CSVS
 from .class_weight import get_class_weight
 
 __all__ = ["get_criterion"]
@@ -12,21 +12,27 @@ logger = getLogger(__name__)
 
 def get_criterion(
     use_class_weight: bool = False,
-    train_csv_file: Optional[str] = None,
+    dataset_name: Optional[str] = None,
     device: Optional[str] = None,
 ) -> nn.Module:
 
     if use_class_weight:
-        if train_csv_file is None or not os.path.exists(train_csv_file):
-            message = "the path to a csv file for training is invalid."
+        if dataset_name is None:
+            message = "dataset_name used for training should be specified."
             logger.error(message)
-            raise FileNotFoundError(message)
+            raise ValueError(message)
 
         if device is None:
             message = "you should specify a device when you use class weight."
             logger.error(message)
             raise ValueError(message)
 
+        if dataset_name not in DATASET_CSVS:
+            message = "dataset_name is invalid."
+            logger.error(message)
+            raise ValueError(message)
+
+        train_csv_file = DATASET_CSVS[dataset_name].train
         class_weight = get_class_weight(train_csv_file).to(device)
         criterion = nn.CrossEntropyLoss(weight=class_weight)
     else:
