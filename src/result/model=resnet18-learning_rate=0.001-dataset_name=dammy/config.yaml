@@ -1,14 +1,13 @@
 batch_size: 32
-dataset_name: flower
+dataset_name: dammy
 height: 224
-learning_rate: 0.0003
+learning_rate: 0.001
 max_epoch: 50
 model: resnet18
 num_workers: 2
 pretrained: true
+topk:
+- 1
+- 3
 use_class_weight: true
 width: 224
-topk:
-  - 1
-  - 3
-  - 5

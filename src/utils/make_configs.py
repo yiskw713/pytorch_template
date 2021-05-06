@@ -127,9 +127,9 @@ def generate_and_save_config(
         if n_options_dict[k] == 1:
             continue
         else:
-            param_list.append(f"{k}-{v}")
+            param_list.append(f"{k}={v}")
 
-    dir_name = "_".join(param_list)
+    dir_name = "-".join(param_list)
     dir_path = os.path.join(root_dir, dir_name)
 
     if not os.path.exists(dir_path):

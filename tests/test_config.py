@@ -10,17 +10,15 @@ from src.libs.config import Config, convert_list2tuple, get_config
 def base_dict() -> Dict[str, Any]:
     _dict = {
         "batch_size": 32,
+        "dataset_name": "flower",
         "height": 224,
         "learning_rate": 0.0003,
         "max_epoch": 50,
         "model": "resnet18",
         "num_workers": 2,
         "pretrained": True,
-        "test_csv": "./tests/sample/pytest_test.csv",
         "topk": (1, 3, 5),
-        "train_csv": "./tests/sample/pytest_train.csv",
         "use_class_weight": True,
-        "val_csv": "./tests/sample/pytest_val.csv",
         "width": 224,
     }
     return _dict
@@ -37,6 +35,17 @@ class TestConfig(object):
 
             with pytest.raises(TypeError):
                 Config(**_dict)
+
+    def test_value_check(self, base_dict: Dict[str, Any]) -> None:
+        _dict = base_dict.copy()
+        _dict["dataset_name"] = "hoge"
+        with pytest.raises(ValueError):
+            Config(**_dict)
+
+        _dict = base_dict.copy()
+        _dict["max_epoch"] = -100
+        with pytest.raises(ValueError):
+            Config(**_dict)
 
     def test_type_check_element(self, base_dict: Dict[str, Any]) -> None:
         for val in [("train", "test"), (True, False), (1.2, 2.5)]:

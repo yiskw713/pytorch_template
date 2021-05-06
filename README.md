@@ -61,13 +61,16 @@ Download the dataset from [HERE](https://www.kaggle.com/alxmamaev/flowers-recogn
   * e.g.) run this command
 
   ```bash
-  python utils/make_configs.py --model resnet18 resnet30 resnet50 --learning_rate 0.001 0.0001
+  python utils/make_configs.py --model resnet18 resnet30 resnet50 --learning_rate 0.001 0.0001 --dataset_name flower
   ```
 
-  then you can get all of the combinations
-  with `model` and `learning_rate` (total 6 config files)
-  while the other parameters are set by default
-  as described in `libs/config.py`.
+  then you can get all of the combinations with `model` and `learning_rate` (total 6 config files),
+  while the other parameters are set by default as described in `libs/config.py`.
+
+  You can choose which data you use in experiment by specifying `dataset_name`.
+  The lists of data for training, validation and testing are saved as csv files.
+  You can see the paths to them in `libs/dataset_csv.py` and get them corresponding to `dataset_name`.
+  If you want to use another dataset, please add csv files and the paths in `DATASET_CSVS` in `libs/dataset_csv.py`.
 
   You can also set tuple object parameters in configs like the below.
 

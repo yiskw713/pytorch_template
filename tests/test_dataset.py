@@ -7,9 +7,10 @@ from src.libs.dataset import FlowersDataset, get_dataloader
 
 
 @pytest.mark.parametrize("batch_size", [1, 2])
-def test_get_dataloader(batch_size):
+def test_get_dataloader(batch_size) -> None:
     loader = get_dataloader(
-        csv_file="./tests/sample/pytest_train.csv",
+        dataset_name="pytest",
+        split="train",
         batch_size=batch_size,
         shuffle=True,
         num_workers=1,
