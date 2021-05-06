@@ -9,7 +9,7 @@ def test_get_criterion() -> None:
         get_criterion(True, device="cpu")
 
     with pytest.raises(ValueError):
-        get_criterion(True, dataset_name="flower")
+        get_criterion(True, dataset_name="pytest")
 
     with pytest.raises(ValueError):
         get_criterion(True, dataset_name="hoge", device="cpu")
@@ -24,5 +24,5 @@ def test_get_criterion() -> None:
     assert loss > 0
     assert criterion.weight is None
 
-    criterion = get_criterion(True, dataset_name="flower", device="cpu")
+    criterion = get_criterion(True, dataset_name="pytest", device="cpu")
     assert criterion.weight is not None

@@ -12,6 +12,11 @@ def get_class_num(train_csv_file: str) -> torch.Tensor:
     Args:
         train_csv_file: the path to the train csv file
     """
+    try:
+        df = pd.read_csv(train_csv_file)
+    except FileNotFoundError as err:
+        logger.exception(f"{err}")
+        raise err
 
     df = pd.read_csv(train_csv_file)
     n_classes = df["class_id"].nunique()

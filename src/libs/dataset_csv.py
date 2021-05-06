@@ -28,7 +28,7 @@ DATASET_CSVS = {
     # paths to the csv files for pytest is from project root
     "pytest": DatasetCSV(
         train="./tests/sample/pytest_train.csv",
-        val="./tests/sample/pytest_train.csv",
-        test="./tests/sample/pytest_train.csv",
+        val="./tests/sample/pytest_val.csv",
+        test="./tests/sample/pytest_test.csv",
     ),
 }

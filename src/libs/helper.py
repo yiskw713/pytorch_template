@@ -133,7 +133,7 @@ def evaluate(
 
     # calculate confusion matrix
     n_classes = loader.dataset.get_n_classes()
-    c_matrix = np.zeros((n_classes, n_classes), dtype=np.int)
+    c_matrix = np.zeros((n_classes, n_classes), dtype=np.int32)
 
     # switch to evaluate mode
     model.eval()
