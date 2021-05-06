@@ -1,5 +1,5 @@
 name: mypy_pytest
-on: push
+on: [push, pull_request]
 
 jobs:
   mypy_pytest:
