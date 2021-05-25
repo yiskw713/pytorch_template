@@ -18,6 +18,8 @@ project for pytorch implementation example of image classification
 
 Please run `poetry install` to install the necessary packages.
 
+You can also setup the environment using docker and docker-compose.
+
 ## Dataset
 
 Flowers Recognition Dataset
@@ -37,6 +39,8 @@ Download the dataset from [HERE](https://www.kaggle.com/alxmamaev/flowers-recogn
 ├── .gitattributes
 ├── .pre-commit-config.yaml
 ├── poetry.lock
+├── docker-compose.yaml
+├── Dockerfile
 ├── tests/
 └── src/
     ├── csv
@@ -91,13 +95,28 @@ Download the dataset from [HERE](https://www.kaggle.com/alxmamaev/flowers-recogn
 Please see `scripts/experiment.sh` for the detail.
 You can set configurations and run all the experiments by the below command.
 
-```shell
+```sh
 sh scripts/experiment.sh
+```
+
+### Setup dependencies
+
+If you use local environment, then run
+
+```sh
+poetry install
+```
+
+If you use docker, then run
+
+```sh
+docker-compose up -d --build
+docker-compose run mlserver bash
 ```
 
 ### training
 
-```shell
+```sh
 python train.py ./result/xxxx/config.yaml
 ```
 
@@ -133,6 +152,7 @@ python utils/visualize_model.py MODEL_NAME
 * [x] calculate cyclomatic complexity / expression complexity / cognitive complexity (`flake8` extension)
 * [x] CI for testing using GitHub Actions
 * [x] visualization of models
+* [x] add Dockerfile and docker-compose.yaml
 
 ## License
 
