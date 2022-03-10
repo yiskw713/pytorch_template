@@ -1,7 +1,5 @@
 .ipynb_checkpoints
 .python-version
-.vscode
-dataset/flowers
 *.png
 *.jpg
 __pycache__
@@ -13,6 +11,7 @@ wandb
 wandb_result
 .mypy_cache
 .coverage*
-!tests/sample/*.jpg
 .pytest_cache
+
+!tests/sample/*.jpg
 !src/imgs/*.png
