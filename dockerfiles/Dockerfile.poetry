@@ -1,0 +1,56 @@
+ARG PYTHON_ENV=python:3.9.9-slim
+
+# build stage
+FROM $PYTHON_ENV as build
+
+COPY ./pyproject.toml /app/pyproject.toml
+RUN apt update && \
+    apt install -y \
+    ffmpeg libsm6 libxext6 ninja-build libglib2.0-0 libsm6 libxrender-dev gcc
+
+WORKDIR /app
+# install python dependencies
+RUN python -m pip install --upgrade pip && \
+    python -m pip install poetry && \
+    poetry config virtualenvs.in-project true && \
+    poetry install --no-dev && \
+    rm -rf ~/.cache
+
+# install python dependencies with poethepoet
+# some packages cannot installed with poetry (e.g. pytorch)
+RUN poetry add poethepoet && \
+    poetry run poe install_torch && \
+    poetry run poe install_sklearn && \
+    poetry remove poethepoet && \
+    rm -rf ~/.cache
+
+# development stage
+FROM $BPYTHON_$PYTHON_ENV as development
+
+COPY --from=build /app/pyproject.toml /app/pyproject.toml
+COPY --from=build /app/poetry.lock /app/poetry.lock
+COPY --from=build /app/.venv /app/.venv
+ENV PATH=/app/.venv/bin:$PATH
+
+COPY --from=build /usr/bin/* /usr/bin/
+RUN apt update && \
+    apt install -y git vim
+
+WORKDIR /app
+RUN python -m pip install --upgrade pip && \
+    python -m pip install poetry && \
+    poetry config virtualenvs.in-project true && \
+    poetry install && \
+    rm -rf ~/.cache
+
+# production stage
+FROM $BPYTHON_$PYTHON_ENV as production
+
+RUN apt update && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /app/.venv /app/.venv
+ENV PATH=/app/.venv/bin:$PATH
+
+CMD ["/bin/bash"]
