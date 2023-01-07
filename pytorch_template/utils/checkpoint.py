@@ -1,22 +1,20 @@
-import os
-from logging import getLogger
 from typing import Tuple
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
-logger = getLogger(__name__)
+from loguru import logger
 
 
 def save_checkpoint(
-    result_path: str,
+    save_path: str,
     epoch: int,
     model: nn.Module,
     optimizer: optim.Optimizer,
     best_loss: float,
 ) -> None:
-
+    # TODO: save path
+    # TODO: kwargs
     save_states = {
         "epoch": epoch,
         "state_dict": model.state_dict(),
@@ -24,8 +22,8 @@ def save_checkpoint(
         "best_loss": best_loss,
     }
 
-    torch.save(save_states, os.path.join(result_path, "checkpoint.pth"))
-    logger.debug("successfully saved the ckeckpoint.")
+    torch.save(save_states, save_path)
+    logger.debug(f"successfully saved the ckeckpoint in {save_path}.")
 
 
 def resume(
@@ -34,7 +32,7 @@ def resume(
     try:
         checkpoint = torch.load(resume_path, map_location=lambda storage, loc: storage)
         logger.info("loading checkpoint {}".format(resume_path))
-    except FileNotFoundError("there is no checkpoint at the result folder.") as e:
+    except FileNotFoundError as e:
         logger.exception(f"{e}")
 
     begin_epoch = checkpoint["epoch"]

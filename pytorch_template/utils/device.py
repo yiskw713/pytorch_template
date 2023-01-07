@@ -1,8 +1,5 @@
-from logging import getLogger
-
 import torch
-
-logger = getLogger(__name__)
+from loguru import logger
 
 
 def get_device(allow_only_gpu: bool = True) -> str:

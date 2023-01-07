@@ -1,11 +1,11 @@
 import dataclasses
-from logging import getLogger
 
-logger = getLogger(__name__)
+from loguru import logger
 
 __all__ = ["DATASET_CSVS"]
 
 
+# TODO: csvファイルを直接指定するようにする (このファイルは削除)
 @dataclasses.dataclass(frozen=True)
 class DatasetCSV:
     train: str

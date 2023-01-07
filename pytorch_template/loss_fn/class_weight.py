@@ -1,9 +1,6 @@
-from logging import getLogger
-
 import pandas as pd
 import torch
-
-logger = getLogger(__name__)
+from loguru import logger
 
 
 def get_class_num(train_csv_file: str) -> torch.Tensor:

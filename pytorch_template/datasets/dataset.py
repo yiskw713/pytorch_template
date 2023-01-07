@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
 from .dataset_csv import DATASET_CSVS
+from .utils import seed_worker
 
 __all__ = ["get_dataloader"]
 
@@ -23,6 +24,7 @@ def get_dataloader(
     pin_memory: bool,
     drop_last: bool = False,
     transform: Optional[transforms.Compose] = None,
+    seed: int = 0,
 ) -> DataLoader:
     if dataset_name not in DATASET_CSVS:
         message = f"dataset_name should be selected from {list(DATASET_CSVS.keys())}."
@@ -39,6 +41,9 @@ def get_dataloader(
     csv_file = getattr(DATASET_CSVS[dataset_name], split)
 
     data = FlowersDataset(csv_file, transform=transform)
+
+    gen = torch.Generator()
+    gen.manual_seed(seed)
     dataloader = DataLoader(
         data,
         batch_size=batch_size,
@@ -46,6 +51,8 @@ def get_dataloader(
         num_workers=num_workers,
         pin_memory=pin_memory,
         drop_last=drop_last,
+        worker_init_fn=seed_worker,
+        generator=gen,
     )
 
     return dataloader
@@ -59,14 +66,18 @@ class FlowersDataset(Dataset):
 
         try:
             self.df = pd.read_csv(csv_file)
-        except FileNotFoundError("csv file not found.") as e:
+        except FileNotFoundError as e:
             logger.exception(f"{e}")
 
         self.n_classes = self.df["class_id"].nunique()
         self.transform = transform
 
+        logger.info(f"load the data list in {csv_file}")
         logger.info(f"the number of classes: {self.n_classes}")
+
+        # TODO:
         logger.info(f"the number of samples: {len(self.df)}")
+        logger.info(f"the number of samples: {len(self)}")
 
     def __len__(self) -> int:
         return len(self.df)

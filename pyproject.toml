@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "pytorch project template"
 authors = ["yiskw713"]
 license = "MIT"
+packages = [{include = "pytorch_template"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"

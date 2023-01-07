@@ -1,12 +1,10 @@
-from logging import getLogger
-
 import torch.nn as nn
 import torchvision
+from loguru import logger
 
 __all__ = ["get_model"]
 
 model_names = ["resnet18", "resnet34", "resnet50"]
-logger = getLogger(__name__)
 
 
 def get_model(name: str, n_classes: int, pretrained: bool = True) -> nn.Module:

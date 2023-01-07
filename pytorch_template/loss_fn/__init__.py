@@ -1,13 +1,12 @@
-from logging import getLogger
 from typing import Optional
 
 import torch.nn as nn
+from loguru import logger
 
 from ..dataset_csv import DATASET_CSVS
 from .class_weight import get_class_weight
 
 __all__ = ["get_criterion"]
-logger = getLogger(__name__)
 
 
 def get_criterion(
